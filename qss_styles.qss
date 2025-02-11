@@ -3,7 +3,7 @@
 /* Общий стиль приложения */
 QWidget {
     background-color: #E3F2FD;
-    font-family: Arial;
+    font-family: "Segoe UI";
     font-size: 16px;
 }
 
@@ -16,10 +16,10 @@ QPushButton {
     padding: 8px 10px;
     font-weight: bold;
     font-size: 16px;
-    min-height: 40px; /* Одинаковая высота */
-    min-width: 100px; /* Одинаковая ширина */
+    min-height: 40px;
+    min-width: 100px;
     text-align: center;
-    word-wrap: break-word; /* Перенос длинного текста */
+    word-wrap: break-word;
 }
 
 /* Поля ввода */
@@ -29,7 +29,7 @@ QLineEdit {
     border-radius: 4px;
     padding: 3px 5px;
     font-size: 16px;
-    min-height: 40px; /* Одинаковая высота с кнопками */
+    min-height: 40px;
 }
 
 /* Метки */
@@ -37,7 +37,7 @@ QLabel {
     color: #0D47A1;
     font-size: 16px;
     font-weight: bold;
-    min-height: 40px; /* Одинаковая высота */
+    min-height: 40px;
     text-align: center;
     padding: 5px;
 }
