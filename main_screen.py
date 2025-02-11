@@ -46,17 +46,14 @@ class MainScreen(QMainWindow):
         self.lab_stack = QStackedWidget()
         self.main_layout.addWidget(self.lab_stack)
 
-        # Создаем экземпляры лабораторных работ
         self.lab1 = Lab1()
         self.lab2 = Lab2()
-        # Подключаем кнопку "Назад" для возврата к меню
         self.lab1.back_button.clicked.connect(self.show_main_menu)
         self.lab2.back_button.clicked.connect(self.show_main_menu)
 
         self.lab_stack.addWidget(self.lab1)
         self.lab_stack.addWidget(self.lab2)
 
-        # Изначально отображаем меню выбора лабораторных работ, а область лабораторной работы скрыта
         self.lab_stack.setVisible(False)
 
     def open_lab1(self):
