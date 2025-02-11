@@ -1,48 +1,44 @@
 # main_screen.py
 from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QPushButton, QStackedWidget, QLabel, QFrame, QSizePolicy
+    QMainWindow, QWidget, QVBoxLayout, QPushButton, QStackedWidget, QLabel, QFrame, QSizePolicy, QGridLayout
 )
 from PyQt5.QtCore import Qt
 from configurator import Lab1, Lab2
+
 
 class MainScreen(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Выбор лабораторной работы")
-        self.resize(800, 600)
+        self.resize(1200, 800)
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
         self.main_layout = QVBoxLayout()
         self.central_widget.setLayout(self.main_layout)
 
-        # Центрированный заголовок
-        self.title_label = QLabel("Лабораторные работы по курсу")
+        self.title_label = QLabel("Лабораторные работы по курсу ТАУ (теория автоматического управления)")
         self.title_label.setAlignment(Qt.AlignCenter)
-        self.title_label.setStyleSheet("font-size: 24px; font-weight: bold; color: #0D47A1;")
+        self.title_label.setStyleSheet("font-size: 28px; font-weight: bold; color: #0D47A1;")
         self.main_layout.addWidget(self.title_label)
 
-        # Контейнер для выбора лабораторных работ
         self.menu_container = QFrame()
-        self.menu_container.setStyleSheet(
-            "background-color: white; border: 2px solid #90CAF9; border-radius: 10px; padding: 20px;"
-        )
-        menu_layout = QVBoxLayout()
-        self.menu_container.setLayout(menu_layout)
+        self.menu_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        grid = QGridLayout()
+        self.menu_container.setLayout(grid)
 
-        self.lab1_button = QPushButton("Лабораторная работа 1: Парабола и корневые функции")
+        self.lab1_button = QPushButton("ЛР-1: Парабола и корневые функции")
         self.lab1_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.lab1_button.clicked.connect(self.open_lab1)
-        menu_layout.addWidget(self.lab1_button)
+        grid.addWidget(self.lab1_button, 0, 0)
 
-        self.lab2_button = QPushButton("Лабораторная работа 2: Синус и косинус")
+        self.lab2_button = QPushButton("ЛР-2: Синус и косинус")
         self.lab2_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.lab2_button.clicked.connect(self.open_lab2)
-        menu_layout.addWidget(self.lab2_button)
+        grid.addWidget(self.lab2_button, 0, 1)
 
         self.main_layout.addWidget(self.menu_container)
 
-        # QStackedWidget для отображения выбранной лабораторной работы
         self.lab_stack = QStackedWidget()
         self.main_layout.addWidget(self.lab_stack)
 
@@ -73,9 +69,11 @@ class MainScreen(QMainWindow):
         self.menu_container.setVisible(True)
         self.title_label.setVisible(True)
 
+
 if __name__ == "__main__":
     import sys
     from PyQt5.QtWidgets import QApplication
+
     app = QApplication(sys.argv)
     window = MainScreen()
     window.show()

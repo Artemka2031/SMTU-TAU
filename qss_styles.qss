@@ -1,0 +1,64 @@
+/* qss_styles.qss */
+
+/* Общий фон приложения */
+QWidget {
+    background-color: #E3F2FD; /* светло-синий фон */
+    font-family: Arial;
+    font-size: 16px;
+}
+
+/* Кнопки */
+QPushButton {
+    background-color: #64B5F6; /* синий фон */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px; /* уменьшенный вертикальный отступ */
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Кнопка "Назад" – устанавливаем объектное имя для стилизации */
+QPushButton#backButton {
+    min-height: 40px; /* фиксированная высота, чтобы совпадала с заголовком */
+}
+
+/* Поля ввода */
+QLineEdit {
+    background-color: white;
+    border: 1px solid #90CAF9;
+    border-radius: 4px;
+    padding: 3px 5px;  /* уменьшенные вертикальные отступы */
+    font-size: 16px;
+}
+
+/* Метки (QLabel) */
+QLabel {
+    color: #0D47A1;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Прямоугольные контейнеры (QFrame) – для блоков параметров и меню */
+QFrame {
+    background-color: white;
+    border: 1px solid #90CAF9; /* уменьшенная толщина рамки */
+    border-radius: 5px;        /* уменьшенный радиус скругления */
+    padding: 10px;             /* уменьшенные внутренние отступы */
+}
+
+/* Контейнер для отображения координат (если такой используется) – без рамки */
+#CoordinateDisplay {
+    border: none;
+}
+
+/* Стили для активного состояния графика (кнопки выбора графиков) */
+QPushButton.activeGraph {
+    background-color: #42A5F5;
+    opacity: 1.0;
+}
+
+/* При наведении прозрачность кнопок убирается */
+QPushButton:hover {
+    opacity: 1.0;
+}

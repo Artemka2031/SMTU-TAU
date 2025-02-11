@@ -5,15 +5,15 @@ from PyQt5.QtWidgets import QPushButton, QMessageBox
 
 class Lab1(LabWorkTemplate):
     def __init__(self, parent=None):
-        # Определяем список доступных функций до вызова конструктора базового класса
         self.available_functions = ["Парабола", "Квадратный корень", "Кубический корень"]
-        super().__init__(lab_title="Лабораторная работа 1: Парабола и корневые функции", parent=parent)
+        super().__init__(lab_title="ЛР-1: Парабола и корневые функции", parent=parent)
         self.set_note_text("Примечание: Для функций 'Квадратный корень' и 'Кубический корень' значение W должно быть >= 0.")
         self.stored_curves = {func: [] for func in self.available_functions}
         self.active_function = self.available_functions[0]
 
     def setup_function_selection_buttons(self):
         self.function_buttons = []
+        # Создаем горизонтальный блок кнопок
         for func in self.available_functions:
             btn = QPushButton(func)
             btn.setCheckable(True)
@@ -54,14 +54,10 @@ class Lab1(LabWorkTemplate):
     def get_axis_labels(self):
         return ("W", "Y")
 
-
-#### Lab2 (Синус и косинус):
-
 class Lab2(LabWorkTemplate):
     def __init__(self, parent=None):
-        # Определяем список функций до вызова базового конструктора
         self.available_functions = ["Синус", "Косинус", "Синус и косинус"]
-        super().__init__(lab_title="Лабораторная работа 2: Синус и косинус", parent=parent)
+        super().__init__(lab_title="ЛР-2: Синус и косинус", parent=parent)
         self.set_note_text("Примечание: Укажите амплитуду A. При выборе 'Синус и косинус' будут построены оба графика.")
         self.stored_curves = {func: [] for func in self.available_functions}
         self.active_function = self.available_functions[0]
