@@ -1,26 +1,25 @@
 /* qss_styles.qss */
 
-/* Общий фон приложения */
+/* Общий стиль приложения */
 QWidget {
-    background-color: #E3F2FD; /* светло-синий фон */
+    background-color: #E3F2FD;
     font-family: Arial;
     font-size: 16px;
 }
 
 /* Кнопки */
 QPushButton {
-    background-color: #64B5F6; /* синий фон */
+    background-color: #64B5F6;
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 8px 10px; /* уменьшенный вертикальный отступ */
+    padding: 8px 10px;
     font-weight: bold;
-    font-size: 18px;
-}
-
-/* Кнопка "Назад" – устанавливаем объектное имя для стилизации */
-QPushButton#backButton {
-    min-height: 40px; /* фиксированная высота, чтобы совпадала с заголовком */
+    font-size: 16px;
+    min-height: 40px; /* Одинаковая высота */
+    min-width: 100px; /* Одинаковая ширина */
+    text-align: center;
+    word-wrap: break-word; /* Перенос длинного текста */
 }
 
 /* Поля ввода */
@@ -28,37 +27,17 @@ QLineEdit {
     background-color: white;
     border: 1px solid #90CAF9;
     border-radius: 4px;
-    padding: 3px 5px;  /* уменьшенные вертикальные отступы */
+    padding: 3px 5px;
     font-size: 16px;
+    min-height: 40px; /* Одинаковая высота с кнопками */
 }
 
-/* Метки (QLabel) */
+/* Метки */
 QLabel {
     color: #0D47A1;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
-}
-
-/* Прямоугольные контейнеры (QFrame) – для блоков параметров и меню */
-QFrame {
-    background-color: white;
-    border: 1px solid #90CAF9; /* уменьшенная толщина рамки */
-    border-radius: 5px;        /* уменьшенный радиус скругления */
-    padding: 10px;             /* уменьшенные внутренние отступы */
-}
-
-/* Контейнер для отображения координат (если такой используется) – без рамки */
-#CoordinateDisplay {
-    border: none;
-}
-
-/* Стили для активного состояния графика (кнопки выбора графиков) */
-QPushButton.activeGraph {
-    background-color: #42A5F5;
-    opacity: 1.0;
-}
-
-/* При наведении прозрачность кнопок убирается */
-QPushButton:hover {
-    opacity: 1.0;
+    min-height: 40px; /* Одинаковая высота */
+    text-align: center;
+    padding: 5px;
 }
