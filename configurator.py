@@ -97,13 +97,13 @@ class Lab1(LabWorkTemplate):
         T = float(self.param_inputs["T"].text())
         t = int(self.param_inputs["t"].text())
 
-        step = int(graph_params.step * 100000)
+        count_of_points = graph_params.count_of_points
 
-        x_PH, y_PH = self.calculate_PH(K, Xm, T, t, step)
-        x_ACH, y_ACH = self.calculate_ACH(K, T, graph_params, step)
-        x_FCHH, y_FCHH = self.calculate_FCHH(T, graph_params, step)
-        x_AFCH_Re, y_AFCH_Im = self.calculate_AFCH(K, T, graph_params, step)
-        x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = self.calculate_LAFCH(K, T, graph_params, step)
+        x_PH, y_PH = self.calculate_PH(K, Xm, T, t, count_of_points)
+        x_ACH, y_ACH = self.calculate_ACH(K, T, graph_params, count_of_points)
+        x_FCHH, y_FCHH = self.calculate_FCHH(T, graph_params, count_of_points)
+        x_AFCH_Re, y_AFCH_Im = self.calculate_AFCH(K, T, graph_params, count_of_points)
+        x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = self.calculate_LAFCH(K, T, graph_params, count_of_points)
 
         result = {
             "Переходная характеристика": (x_PH, y_PH, f"Переходная характеристика: K={K}, Xm={Xm}, T={T}"),
@@ -189,13 +189,13 @@ class Lab2(LabWorkTemplate):
         T = float(self.param_inputs["T"].text())
         t = int(self.param_inputs["t"].text())
 
-        step = int(graph_params.step * 100000)
+        count_of_points = graph_params.count_of_points
 
-        x_PH, y_PH = self.calculate_PH(K, T, Xm, t, step)
-        x_ACH, y_ACH = self.calculate_ACH(K, T, graph_params, step)
-        x_FCHH, y_FCHH = self.calculate_FCHH(T, graph_params, step)
-        x_AFCH_Re, y_AFCH_Im = self.calculate_AFCH(K, T, graph_params, step)
-        x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = self.calculate_LAFCH(K, T, graph_params, step)
+        x_PH, y_PH = self.calculate_PH(K, T, Xm, t, count_of_points)
+        x_ACH, y_ACH = self.calculate_ACH(K, T, graph_params, count_of_points)
+        x_FCHH, y_FCHH = self.calculate_FCHH(T, graph_params, count_of_points)
+        x_AFCH_Re, y_AFCH_Im = self.calculate_AFCH(K, T, graph_params, count_of_points)
+        x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = self.calculate_LAFCH(K, T, graph_params, count_of_points)
 
         return {
             "Переходная характеристика": (x_PH, y_PH, f"Переходная характеристика: K={K}, T={T}"),
@@ -281,13 +281,13 @@ class Lab3(LabWorkTemplate):
         T2 = float(self.param_inputs["T2"].text())
         t = int(self.param_inputs["t"].text())
 
-        step = int(graph_params.step * 100000)
+        count_of_points = graph_params.count_of_points
 
-        x_PH, y_PH = self.calculate_PH(K1, K2, Xm, T1, T2, t, step)
-        x_ACH, y_ACH = self.calculate_ACH(K1, K2, T1, T2, graph_params, step)
-        x_FCHH, y_FCHH = self.calculate_FCHH(T1, T2, graph_params, step)
-        x_AFCH_Re, y_AFCH_Im = self.calculate_AFCH(K1, K2, T1, T2, graph_params, step)
-        x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = self.calculate_LAFCH(K1, K2, T1, T2, graph_params, step)
+        x_PH, y_PH = self.calculate_PH(K1, K2, Xm, T1, T2, t, count_of_points)
+        x_ACH, y_ACH = self.calculate_ACH(K1, K2, T1, T2, graph_params, count_of_points)
+        x_FCHH, y_FCHH = self.calculate_FCHH(T1, T2, graph_params, count_of_points)
+        x_AFCH_Re, y_AFCH_Im = self.calculate_AFCH(K1, K2, T1, T2, graph_params, count_of_points)
+        x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = self.calculate_LAFCH(K1, K2, T1, T2, graph_params, count_of_points)
 
         return {
             "Переходная характеристика": (x_PH, y_PH, f"Переходная характеристика: K1={K1}, K2={K2}, T1={T1}, T2={T2}"),
@@ -370,13 +370,13 @@ class Lab4(LabWorkTemplate):
         xi = float(self.param_inputs["xi"].text())
         t = int(self.param_inputs["t"].text())
 
-        step = int(graph_params.step * 100000)
+        count_of_points = graph_params.count_of_points
 
-        x_PH, y_PH = self.calculate_PH(K, Xm, T, xi, t, step)
-        x_ACH, y_ACH = self.calculate_ACH(K, T, xi, graph_params, step)
-        x_FCHH, y_FCHH = self.calculate_FCHH(T, xi, graph_params, step)
-        x_AFCH_Re, y_AFCH_Im = self.calculate_AFCH(K, T, xi, graph_params, step)
-        x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = self.calculate_LAFCH(K, T, xi, graph_params, step)
+        x_PH, y_PH = self.calculate_PH(K, Xm, T, xi, t, count_of_points)
+        x_ACH, y_ACH = self.calculate_ACH(K, T, xi, graph_params, count_of_points)
+        x_FCHH, y_FCHH = self.calculate_FCHH(T, xi, graph_params, count_of_points)
+        x_AFCH_Re, y_AFCH_Im = self.calculate_AFCH(K, T, xi, graph_params, count_of_points)
+        x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = self.calculate_LAFCH(K, T, xi, graph_params, count_of_points)
         return {
             "Переходная характеристика": (x_PH, y_PH, f"Переходная характеристика: K={K}, T={T}, ξ={xi}"),
             "АЧХ": (x_ACH, y_ACH, f"АЧХ: K={K}, T={T}, ξ={xi}"),

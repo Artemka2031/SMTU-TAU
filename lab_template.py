@@ -125,7 +125,7 @@ class GraphWidget(QWidget):
 class GraphParameters(BaseModel):
     w_start: float
     w_end: float
-    step: float
+    count_of_points: int
     t: float  # Время наблюдения (сек)
 
 
@@ -231,11 +231,11 @@ class LabWorkTemplate(QWidget):
     def setup_graph_parameter_inputs(self):
         self.graph_param_inputs['w_start'] = QLineEdit("0")
         self.graph_param_inputs['w_end'] = QLineEdit("10")
-        self.graph_param_inputs['step'] = QLineEdit("0.1")
+        self.graph_param_inputs['count_of_points'] = QLineEdit("10000")
         self.graph_param_inputs['t'] = QLineEdit("0")
         self.graph_param_form.addRow(QLabel("W начальное:"), self.graph_param_inputs['w_start'])
         self.graph_param_form.addRow(QLabel("W конечное:"), self.graph_param_inputs['w_end'])
-        self.graph_param_form.addRow(QLabel("Шаг:"), self.graph_param_inputs['step'])
+        self.graph_param_form.addRow(QLabel("Количество точек:"), self.graph_param_inputs['count_of_points'])
         self.graph_param_form.addRow(QLabel("t (время наблюдения):"), self.graph_param_inputs['t'])
 
     def on_add_graph_button_clicked(self):
@@ -243,7 +243,7 @@ class LabWorkTemplate(QWidget):
             graph_params = GraphParameters(
                 w_start=float(self.graph_param_inputs['w_start'].text()),
                 w_end=float(self.graph_param_inputs['w_end'].text()),
-                step=float(self.graph_param_inputs['step'].text()),
+                count_of_points=float(self.graph_param_inputs['count_of_points'].text()),
                 t=float(self.graph_param_inputs['t'].text())
             )
         except Exception as e:
@@ -253,10 +253,18 @@ class LabWorkTemplate(QWidget):
         try:
             new_results = self.calculate_all_functions(graph_params)
 
+            # Добавляем результаты в self.stored_curves
             for func, (x, y, label) in new_results.items():
                 if func not in self.stored_curves:
                     self.stored_curves[func] = []
                 self.stored_curves[func].append((x, y, label))
+
+            # Добавляем общий ключ "ЛАФЧХ", который объединяет два набора данных
+            if "ЛАФЧХ (амплитуда)" in self.stored_curves and "ЛАФЧХ (фаза)" in self.stored_curves:
+                self.stored_curves["ЛАФЧХ"] = [
+                    self.stored_curves["ЛАФЧХ (амплитуда)"],
+                    self.stored_curves["ЛАФЧХ (фаза)"]
+                ]
 
             self.update_graph_display()
         except Exception as e:
@@ -288,12 +296,22 @@ class LabWorkTemplate(QWidget):
         if self.active_function in self.stored_curves:
             use_log = self.active_function in ["АЧХ", "ФЧХ", "ЛАФЧХ"]
 
-            for (x, y, label) in self.stored_curves[self.active_function]:
-                self.graph_widget.add_graph_line(
-                    x, y, label,
-                    axis_labels=("ω, рад/с", "Y"),
-                    log_x=use_log
-                )
+            if self.active_function == "ЛАФЧХ":
+                # Проверяем, есть ли нужные данные для ЛАФЧХ
+                if "ЛАФЧХ (амплитуда)" in self.stored_curves and "ЛАФЧХ (фаза)" in self.stored_curves:
+                    amplitude_data = self.stored_curves["ЛАФЧХ (амплитуда)"]
+                    phase_data = self.stored_curves["ЛАФЧХ (фаза)"]
+
+                    # Вызываем функцию отрисовки ЛАФЧХ в GraphWidget
+                    self.graph_widget.plot_LAFCH(amplitude_data, phase_data)
+            else:
+                # Обычные графики
+                for (x, y, label) in self.stored_curves[self.active_function]:
+                    self.graph_widget.add_graph_line(
+                        x, y, label,
+                        axis_labels=("ω, рад/с", "Y"),
+                        log_x=use_log
+                    )
 
             if self.stored_curves[self.active_function]:
                 self.current_data = self.stored_curves[self.active_function][0][:2]
