@@ -24,6 +24,7 @@ class GraphWidget(QWidget):
         self.figure = Figure(figsize=(12, 8))
         self.canvas = FigureCanvas(self.figure)
         self.ax = self.figure.add_subplot(111)
+        # Панель навигации (перемещена под график)
         self.toolbar = NavigationToolbar2QT(self.canvas, self)
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
@@ -85,12 +86,13 @@ class GraphWidget(QWidget):
         if log_x:
             self.ax.set_xscale('log')
         else:
+            # Если рисуем разные функции подряд, имеет смысл при False
+            # сбрасывать шкалу обратно на линейную.
             self.ax.set_xscale('linear')
 
         line, = self.ax.plot(x, y, label=label, linewidth=2, color=color)
         self.lines.append(line)
-
-        # Подписи осей
+        # Настройка подписей осей: увеличенный и жирный шрифт
         self.ax.set_xlabel(axis_labels[0], fontdict={'fontsize':16, 'fontweight':'bold'}, labelpad=10)
         self.ax.set_ylabel(axis_labels[1], fontdict={'fontsize':16, 'fontweight':'bold'}, labelpad=10)
         self.ax.tick_params(axis='both', which='major', labelsize=14)
@@ -105,7 +107,9 @@ class GraphWidget(QWidget):
         self.canvas.draw()
 
     def clear_graph(self):
+        # Полностью очищаем фигуру, чтобы удалить все оси, включая дополнительную
         self.figure.clear()
+        # Восстанавливаем основную ось
         self.ax = self.figure.add_subplot(111)
         self.ax.grid(True)
         self.lines = []
@@ -126,13 +130,26 @@ class GraphParameters(BaseModel):
     w_start: float
     w_end: float
     count_of_points: int
-    t: float  # Время наблюдения (сек)
 
 
 # ============================
 # Базовый шаблон лабораторной работы
 # ============================
 class LabWorkTemplate(QWidget):
+    """
+    Базовый шаблон лабораторной работы.
+    Элементы компоновки:
+      - Верхняя строка: заголовок с названием лабораторной работы и кнопка "Назад".
+      - Контент разбит на два блока:
+          • Левый (20%): поля ввода параметров, блок конфигурации графика (W начальное, W конечное, Шаг, Время наблюдения),
+            поле с примечаниями и блок с кнопками "Добавить график" и "Очистить график".
+          • Правый (80%): горизонтальный блок с кнопками для выбора функции, затем графический виджет,
+            а под графиком – кнопки сохранения (изображение и CSV).
+      - При переключении активной функции отображаются только кривые, соответствующие выбранному типу.
+      - При добавлении нового набора данных для каждого типа функции создаётся новая кривая.
+      - Кнопка "Очистить график" удаляет все сохранённые данные.
+    """
+
     def add_parameter(self, key, label_text, default_value=""):
         line_edit = QLineEdit()
         line_edit.setText(default_value)
@@ -146,7 +163,7 @@ class LabWorkTemplate(QWidget):
         super().__init__(parent)
         self.lab_title = lab_title
         self.stored_curves = {}  # Словарь для хранения кривых по типам функции
-        self.active_function = None
+        self.active_function = None  # Текущая выбранная функция
         self.use_log_x_axis = False
 
         self.main_layout = QVBoxLayout()
@@ -159,7 +176,7 @@ class LabWorkTemplate(QWidget):
         header_layout.addWidget(self.back_button, alignment=Qt.AlignLeft)
         title_label = QLabel(self.lab_title)
         title_label.setAlignment(Qt.AlignCenter)
-        title_font = QFont("Arial", 28)
+        title_font = QFont("Arial", 20)
         title_label.setFont(title_font)
         header_layout.addWidget(title_label, stretch=1)
         header_layout.addStretch()
@@ -172,24 +189,24 @@ class LabWorkTemplate(QWidget):
         # Левый блок (20% ширины)
         left_layout = QVBoxLayout()
         left_layout.setSpacing(10)
+        # Поля параметров – создаем словарь и форму
         self.param_inputs = {}
         self.param_form = QFormLayout()
-        self.setup_parameter_inputs()
+        self.setup_parameter_inputs()  # Переопределяется в наследниках
         left_layout.addLayout(self.param_form)
-
-        self.graph_param_inputs = {}
+        # Блок конфигурации графика
         self.graph_param_form = QFormLayout()
+        self.graph_param_inputs = {}
         self.setup_graph_parameter_inputs()
         left_layout.addLayout(self.graph_param_form)
-
         # Примечания
         self.note_label = QLabel()
         self.note_label.setWordWrap(True)
         self.note_label.setStyleSheet("color: #0D47A1; font-style: italic; margin: 0px;")
+        left_layout.addWidget(QLabel("Примечания:"))
         left_layout.addWidget(self.note_label)
-
         # Блок кнопок "Добавить график" и "Очистить график"
-        control_buttons_layout = QVBoxLayout()  # Вертикально
+        control_buttons_layout = QVBoxLayout()
         self.add_graph_button = QPushButton("Добавить график")
         self.add_graph_button.clicked.connect(self.on_add_graph_button_clicked)
         self.clear_button = QPushButton("Очистить график")
@@ -202,13 +219,14 @@ class LabWorkTemplate(QWidget):
         # Правый блок (80% ширины)
         right_layout = QVBoxLayout()
         right_layout.setSpacing(10)
+        # Блок кнопок для выбора функции (все кнопки видны)
         self.function_buttons_layout = QHBoxLayout()
         self.setup_function_selection_buttons()  # Переопределяется в наследниках
         right_layout.addLayout(self.function_buttons_layout)
-
+        # Графический виджет
         self.graph_widget = GraphWidget(self)
         right_layout.addWidget(self.graph_widget, 4)
-
+        # Блок кнопок сохранения (под графиком)
         save_buttons_layout = QHBoxLayout()
         self.save_image_button = QPushButton("Сохранить график (изображение)")
         self.save_image_button.clicked.connect(self.on_save_image)
@@ -220,23 +238,31 @@ class LabWorkTemplate(QWidget):
         content_layout.addLayout(right_layout, 4)  # Stretch factor 4 (≈80%)
 
     def setup_function_selection_buttons(self):
+        """
+        Метод для создания горизонтального блока кнопок для выбора функции.
+        Его должен переопределить наследник (например, Lab1 или Lab2), где задается список доступных функций.
+        При этом наследник должен заполнить:
+            - self.available_functions (список)
+            - self.stored_curves (словарь: ключ – функция, значение – список кривых)
+            - установить self.active_function по умолчанию.
+        """
         pass
 
     def setup_parameter_inputs(self):
-        self.add_parameter("K", "K", "3.0")
-        self.add_parameter("Xm", "Xm", "4.0")
-        self.add_parameter("T", "T", "2.0")
-        self.add_parameter("t", "t", "25")
+        """
+        Метод для добавления полей ввода специфичных параметров лабораторной работы.
+        Переопределяется в наследниках.
+        """
+        pass
 
     def setup_graph_parameter_inputs(self):
+        # Параметры графика, расположенные в левом блоке
         self.graph_param_inputs['w_start'] = QLineEdit("0")
         self.graph_param_inputs['w_end'] = QLineEdit("10")
         self.graph_param_inputs['count_of_points'] = QLineEdit("10000")
-        self.graph_param_inputs['t'] = QLineEdit("0")
         self.graph_param_form.addRow(QLabel("W начальное:"), self.graph_param_inputs['w_start'])
         self.graph_param_form.addRow(QLabel("W конечное:"), self.graph_param_inputs['w_end'])
         self.graph_param_form.addRow(QLabel("Количество точек:"), self.graph_param_inputs['count_of_points'])
-        self.graph_param_form.addRow(QLabel("t (время наблюдения):"), self.graph_param_inputs['t'])
 
     def on_add_graph_button_clicked(self):
         try:
@@ -244,16 +270,16 @@ class LabWorkTemplate(QWidget):
                 w_start=float(self.graph_param_inputs['w_start'].text()),
                 w_end=float(self.graph_param_inputs['w_end'].text()),
                 count_of_points=float(self.graph_param_inputs['count_of_points'].text()),
-                t=float(self.graph_param_inputs['t'].text())
             )
         except Exception as e:
             QMessageBox.warning(self, "Ошибка", f"Неверные параметры графика: {e}")
             return
 
         try:
+            # Метод calculate_all_functions() должен быть реализован в наследнике
+            # и возвращать словарь: { функция: (x, y, label), ... }
             new_results = self.calculate_all_functions(graph_params)
-
-            # Добавляем результаты в self.stored_curves
+            # Для каждого типа функции добавляем новый набор данных
             for func, (x, y, label) in new_results.items():
                 if func not in self.stored_curves:
                     self.stored_curves[func] = []
@@ -265,6 +291,7 @@ class LabWorkTemplate(QWidget):
                     self.stored_curves["ЛАФЧХ (амплитуда)"],
                     self.stored_curves["ЛАФЧХ (фаза)"]
                 ]
+
 
             self.update_graph_display()
         except Exception as e:
@@ -287,31 +314,46 @@ class LabWorkTemplate(QWidget):
 
     def on_clear_graph(self):
         self.graph_widget.clear_graph()
+        # Очистка всех сохраненных данных для всех типов функций
         for key in self.stored_curves:
             self.stored_curves[key] = []
 
     def update_graph_display(self):
         self.graph_widget.clear_graph()
-
+        # Отображаем только кривые для активной функции
         if self.active_function in self.stored_curves:
-            use_log = self.active_function in ["АЧХ", "ФЧХ", "ЛАФЧХ"]
-
             if self.active_function == "ЛАФЧХ":
-                # Проверяем, есть ли нужные данные для ЛАФЧХ
+                # Отрисовка ЛАФЧХ без изменений
                 if "ЛАФЧХ (амплитуда)" in self.stored_curves and "ЛАФЧХ (фаза)" in self.stored_curves:
                     amplitude_data = self.stored_curves["ЛАФЧХ (амплитуда)"]
                     phase_data = self.stored_curves["ЛАФЧХ (фаза)"]
-
-                    # Вызываем функцию отрисовки ЛАФЧХ в GraphWidget
                     self.graph_widget.plot_LAFCH(amplitude_data, phase_data)
             else:
-                # Обычные графики
+                # Определяем подписи осей и логарифмическое масштабирование для остальных функций
+                if self.active_function == "АЧХ":
+                    axis_labels = ("Частота, рад/с", "Амплитуда")
+                    use_log = True
+                elif self.active_function == "ФЧХ":
+                    axis_labels = ("Частота, рад/с", "Фаза, °")
+                    use_log = True
+                elif self.active_function in ["АФЧХ", "Годограф Михайлова"]:
+                    axis_labels = ("Re", "Im")
+                    use_log = False
+                else:
+                    axis_labels = ("Время", "Амплитуда")
+                    use_log = False
+
+                # Отрисовка остальных функций
                 for (x, y, label) in self.stored_curves[self.active_function]:
                     self.graph_widget.add_graph_line(
                         x, y, label,
-                        axis_labels=("ω, рад/с", "Y"),
+                        axis_labels=axis_labels,
                         log_x=use_log
                     )
+
+            # Если отображается годограф Михайлова, устанавливаем равные пропорции осей
+            if self.active_function == "Годограф Михайлова":
+                self.graph_widget.ax.set_aspect('equal', adjustable='datalim')
 
             if self.stored_curves[self.active_function]:
                 self.current_data = self.stored_curves[self.active_function][0][:2]
@@ -320,4 +362,10 @@ class LabWorkTemplate(QWidget):
         return ("W", "Y")
 
     def calculate_all_functions(self, graph_params: GraphParameters):
+        """
+        Абстрактный метод, который должен быть реализован в наследнике.
+        Должен вычислять для каждого типа функции (ключ) кортеж (x, y, label)
+        на основе введённых параметров. Возвращает словарь:
+            { функция: (x, y, label), ... }
+        """
         raise NotImplementedError("Метод calculate_all_functions должен быть переопределён в подклассе.")

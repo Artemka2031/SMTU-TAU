@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton, QStackedWidget, QLabel, QFrame, QSizePolicy, QGridLayout
 )
 from PyQt5.QtCore import Qt
-from configurator import Lab1, Lab2, Lab3, Lab4  # Добавляем другие лабораторные
+from configurator import Lab1, Lab2, Lab3, Lab4, Lab5, Lab6  # Добавляем другие лабораторные
 
 
 class MainScreen(QMainWindow):
@@ -34,7 +34,9 @@ class MainScreen(QMainWindow):
             ("ЛР-1: Дифференцирующее звено с замедлением", Lab1),
             ("ЛР-2: Апериодическое звено I порядка", Lab2),
             ("ЛР-3: Апериодическое звено II порядка", Lab3),
-            ("ЛР-4: Колебательное звено", Lab4)
+            ("ЛР-4: Колебательное звено", Lab4),
+            ("ЛР-5: Исследование разомкнутой системы", Lab5),
+            ("ЛР-6: Замкнутая система", Lab6),
         ]
 
         # Индекс для добавления в сетку
