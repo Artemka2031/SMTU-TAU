@@ -1,0 +1,16 @@
+.delete-button {
+  width: 100%; /* кнопка занимает всю ширину */
+  background-color: #4f4f4f;
+  color: white;
+  padding: 1vh 0 1.3vh;
+  border: none;
+  border-radius: 1vh;
+  font-size: 1.7vh;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 1vh;
+
+  &:hover {
+    background-color: #333;
+  }
+}

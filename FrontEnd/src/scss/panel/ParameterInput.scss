@@ -1,0 +1,25 @@
+.parameter-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1vh;
+
+  label {
+    width: 7vh;
+    background-color: #e0e0e0; /* серый фон */
+    border-radius: 1vh;
+    padding: 1vh 0;
+    margin-right: 1vw;
+    color: #888;
+    font-size: 1.7vh;
+    text-align: center;
+  }
+
+  input {
+    flex: 1;
+    padding: 1vh 1vw;
+    border-radius: 1vh;
+    border: 1px solid #ccc;
+    font-size: 1.7vh;
+    text-align: left;
+  }
+}

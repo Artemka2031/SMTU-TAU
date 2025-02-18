@@ -1,0 +1,16 @@
+@use 'abstracts/variables' as *;
+@use 'abstracts/mixins' as *;
+@use 'abstracts/fonts';
+@use 'base/reset';
+@use 'panel/Panel';
+
+// Убираем скролл, подгоняем под 100vw/100vh
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
+}
