@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header/Header';
-import Sidebar from './components/Sidebar/Siderbar';
 import MainContent from './components/MainContent/MainContent';
+import Sidebar from "./components/Sidebar/Sidebar";
+
 
 const App: React.FC = () => {
+  const [activeLab, setActiveLab] = useState<string | null>(null); // Состояние активной лабораторной работы
+
   return (
     <div className="grid-container">
       <Header />
-      <Sidebar />
-      <MainContent />
+      <Sidebar activeLab={activeLab} setActiveLab={setActiveLab} />
+      {activeLab && <MainContent activeLab={activeLab} />} {/* Передаем активную ЛР */}
     </div>
   );
 };

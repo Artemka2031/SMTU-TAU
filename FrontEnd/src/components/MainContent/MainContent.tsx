@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import Panel from "../Panel/Panel";
-import TipeLabButton from ".//TipeLabButton";
+import TipeLabButton from "./TipeLabButton";
 
-const MainContent: React.FC = () => {
+interface MainContentProps {
+  activeLab: string;
+}
+
+const MainContent: React.FC<MainContentProps> = ({ activeLab }) => {
   const [activeButton, setActiveButton] = useState("ПХ");
 
   return (
@@ -10,7 +14,7 @@ const MainContent: React.FC = () => {
       <div className="left-content">
         {/* Верхняя часть (заголовок + кнопки) */}
         <div className="top-bar">
-          <h2>Название лабораторной работы</h2>
+          <h2 title={activeLab}>{activeLab}</h2> {/* Подсказка при наведении */}
           <div className="buttons">
             {["ПХ", "АЧХ", "ФЧХ", "АФЧХ", "ЛАФЧХ"].map((label) => (
               <TipeLabButton

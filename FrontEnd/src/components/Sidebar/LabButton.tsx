@@ -1,14 +1,16 @@
 import React from "react";
 
 interface LabButtonProps {
-  icon: React.ReactNode; // Иконка (может быть SVG или компонент)
-  text: string; // Текст кнопки
-  onClick?: () => void; // Обработчик клика (опционально)
+  icon: React.ReactNode;
+  text: string;
+  onClick?: () => void;
+  isActive?: boolean;
+  title?: string; // ✅ Добавляем `title`
 }
 
-const LabButton: React.FC<LabButtonProps> = ({ icon, text, onClick }) => {
+const LabButton: React.FC<LabButtonProps> = ({ icon, text, onClick, isActive = false, title }) => {
   return (
-    <button className="lab-button" onClick={onClick}>
+    <button className={`lab-button ${isActive ? "active" : ""}`} onClick={onClick} title={title}>
       <span className="icon">{icon}</span>
       <span className="text">{text}</span>
     </button>

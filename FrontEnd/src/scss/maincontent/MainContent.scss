@@ -20,6 +20,8 @@
     display: flex;
     flex-direction: column;
     gap: 20px; // Отступ между верхней частью и графиком
+    padding-bottom: 100px; // Отступ от нижнего края
+
   }
   
   /* Верхняя часть с кнопками */
@@ -70,6 +72,8 @@
     align-items: center;
     justify-content: center;
     min-height: 600px; // График не схлопывается
+    // padding-bottom: 100px; // Отступ от нижнего края
+
   }
   
   /* Правая панель */
