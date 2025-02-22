@@ -23,9 +23,9 @@ const Panel: React.FC = () => {
         <ParameterInput label="Wn" />
         <ParameterInput label="Шаг" />
         <ParameterInput label="t" />
-
+{/* 
         <ParameterInput label="Хуй" />
-        <ParameterInput label="t" />
+        <ParameterInput label="t" /> */}
       </div>
 
       {/* Блок с примечанием и кнопками – прижат к низу */}
