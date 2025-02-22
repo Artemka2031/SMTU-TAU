@@ -5,11 +5,31 @@ const MainContent: React.FC = () => {
   return (
     <div className="main">
       <div className="left-content">
-        <h2>Левая часть</h2>
-        <p>Здесь может быть контент, графики, таблицы и т. д.</p>
+        {/* Верхняя часть (заголовок + кнопки) */}
+        <div className="top-bar">
+          <h2>Название лабоаторной работы</h2>
+          <div className="buttons">
+            <button className="active">ПХ</button>
+            <span className="divider">|</span>
+            <button>АЧХ</button>
+            <span className="divider">|</span>
+            <button>ФЧХ</button>
+            <span className="divider">|</span>
+            <button>АФЧХ</button>
+            <span className="divider">|</span>
+            <button>ЛАФЧХ</button>
+          </div>
+        </div>
+
+        {/* Нижняя часть (график) */}
+        <div className="graph-area">
+          <p>Здесь будет график...</p>
+        </div>
       </div>
+
+      {/* Правая панель */}
       <div className="right-content">
-        <Panel/>
+        <Panel />
       </div>
     </div>
   );

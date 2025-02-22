@@ -3,6 +3,9 @@
 @use 'abstracts/fonts';
 @use 'base/reset';
 @use 'panel/Panel';
+@use 'sidebar/Siderbar';
+@use 'maincontent/MainContent';
+
 
 // Убираем скролл, подгоняем под 100vw/100vh
 html,
@@ -36,33 +39,6 @@ body {
   padding: 16px;
   // box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); // Тень для визуального отделения
 }
-
-
-.main {
-  grid-area: main;
-  display: grid;
-  grid-template-columns: 2fr 1fr; // Левая часть шире, правая уже
-  // gap: 16px; // Отступ между колонками
-  // padding: 16px;
-  height: 100%;
-}
-
-.left-content {
-  background-color: rgb(255, 255, 255); // Временно для наглядности
-  width: 900px;
-  padding: 16px;
-}
-
-.right-content {
-  border: 1px solid #F8F9FA;
-  width: 350px;
-
-  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1); // Тень слева
-
-  padding: 16px;
-
-}
-
 
 .header {
   grid-area: header;

@@ -1,12 +1,13 @@
 import React from "react";
-import logo from "./Image 16(1).png";
+import { SlAnchor } from "react-icons/sl";
+import { CiMenuBurger } from "react-icons/ci";
 
 const Header: React.FC = () => {
   return (
     <header className="header">
       <div className="header-left">
-        <img src={logo} alt="Логотип" className="header-logo" />
-        <h1>КСАИ</h1>
+        <SlAnchor className="header-logo" size={40}/>      
+        <h1 >КСАИ</h1>
       </div>
       <div className="header-right">
         <nav>
@@ -17,7 +18,8 @@ const Header: React.FC = () => {
           <li><button onClick={() => alert("ТДЗ Clicked!")}>ТДЗ</button></li>
           </ul>
         </nav>
-        <button>Меню</button> {/* Кнопка бургер-меню или другое действие */}
+        <button><CiMenuBurger className="header-logo" size={20}/>      
+        </button> {/* Кнопка бургер-меню или другое действие */}
       </div>
     </header>
   );

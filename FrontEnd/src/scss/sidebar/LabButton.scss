@@ -1,0 +1,17 @@
+.lab-button {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1vh;
+  // width: 100%; /* кнопка занимает всю ширину */
+
+
+  .icon {
+    font-size: 20px;
+    margin-right: 8px;
+  }
+  
+  .text {
+    font-size: 16px;
+    color: #333;
+  }
+}
