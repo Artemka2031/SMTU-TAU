@@ -1,23 +1,25 @@
-import React from 'react';
-import Panel from '../Panel/Panel';
+import React, { useState } from "react";
+import Panel from "../Panel/Panel";
+import TipeLabButton from ".//TipeLabButton";
 
 const MainContent: React.FC = () => {
+  const [activeButton, setActiveButton] = useState("ПХ");
+
   return (
     <div className="main">
       <div className="left-content">
         {/* Верхняя часть (заголовок + кнопки) */}
         <div className="top-bar">
-          <h2>Название лабоаторной работы</h2>
+          <h2>Название лабораторной работы</h2>
           <div className="buttons">
-            <button className="active">ПХ</button>
-            <span className="divider">|</span>
-            <button>АЧХ</button>
-            <span className="divider">|</span>
-            <button>ФЧХ</button>
-            <span className="divider">|</span>
-            <button>АФЧХ</button>
-            <span className="divider">|</span>
-            <button>ЛАФЧХ</button>
+            {["ПХ", "АЧХ", "ФЧХ", "АФЧХ", "ЛАФЧХ"].map((label) => (
+              <TipeLabButton
+                key={label}
+                label={label}
+                isActive={activeButton === label}
+                onClick={() => setActiveButton(label)}
+              />
+            ))}
           </div>
         </div>
 

@@ -1,25 +1,33 @@
-import React from "react";
-import { SlAnchor } from "react-icons/sl";
+import React, { useState } from "react";
+import Logo from "./Logo"; // Импортируем новый компонентimport { CiMenuBurger } from "react-icons/ci";
+import HeadButton from "./Headbutton"; // Импортируем новый компонент
 import { CiMenuBurger } from "react-icons/ci";
 
 const Header: React.FC = () => {
+  const [activeButton, setActiveButton] = useState("ТАУ Лин"); // Следим за активной кнопкой
+
   return (
     <header className="header">
       <div className="header-left">
-        <SlAnchor className="header-logo" size={40}/>      
-        <h1 >КСАИ</h1>
+        <Logo size={50} color="#0057B8" text="КСАиИ" /> {/* Используем новый компонент */}
       </div>
       <div className="header-right">
         <nav>
-          <ul style={{ display: "flex", gap: "16px", listStyle: "none", padding: 0 }}>
-          <li><button onClick={() => alert("OA Clicked!")}>OA</button></li>
-          <li><button onClick={() => alert("ТАУ Лин Clicked!")}>ТАУ Лин</button></li>
-          <li><button onClick={() => alert("ТАУ Нелин Clicked!")}>ТАУ Нелин</button></li>
-          <li><button onClick={() => alert("ТДЗ Clicked!")}>ТДЗ</button></li>
+          <ul className="nav-buttons">
+            {["OA", "ТАУ Лин", "ТАУ Нелин", "ТДЗ"].map((label) => (
+              <li key={label}>
+                <HeadButton
+                  label={label}
+                  isActive={activeButton === label}
+                  onClick={() => setActiveButton(label)}
+                />
+              </li>
+            ))}
           </ul>
         </nav>
-        <button><CiMenuBurger className="header-logo" size={20}/>      
-        </button> {/* Кнопка бургер-меню или другое действие */}
+        <button className="menu-button">
+          <CiMenuBurger size={20} />
+        </button>
       </div>
     </header>
   );

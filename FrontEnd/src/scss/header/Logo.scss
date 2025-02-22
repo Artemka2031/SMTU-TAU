@@ -1,0 +1,20 @@
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .logo-icon {
+    transition: transform 0.3s ease-in-out;
+  
+    &:hover {
+      transform: rotate(10deg); // Эффект при наведении
+    }
+  }
+  
+  .logo-text {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+  }
+  

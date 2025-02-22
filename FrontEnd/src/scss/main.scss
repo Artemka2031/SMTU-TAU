@@ -5,6 +5,7 @@
 @use 'panel/Panel';
 @use 'sidebar/Siderbar';
 @use 'maincontent/MainContent';
+@use 'header/Header';
 
 
 // Убираем скролл, подгоняем под 100vw/100vh
@@ -38,37 +39,4 @@ body {
   background-color: #f8f9fa; // Светлый фон для наглядности
   padding: 16px;
   // box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); // Тень для визуального отделения
-}
-
-.header {
-  grid-area: header;
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  height: 60px;
-  display: flex;
-  align-items: center;
-  // padding: 0 16px;
-}
-
-.header-left {
-  width: 250px; // Фиксированная ширина
-  height: 60px;
-
-  background-color: #F8F9FA;
-  color:rgb(0, 0, 0);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 16px;
-
-}
-
-.header-right {
-  height: 60px;
-  border: 1px solid #F8F9FA;
-  flex-grow: 1; // Занимает всю оставшуюся ширину
-  display: flex;
-  align-items: center;
-  justify-content: space-between; // Разместит элементы по краям, можно использовать другое значение
-  padding: 0 16px;
 }
