@@ -1,8 +1,5 @@
 import React from "react";
-// import { SlAnchor } from "react-icons/sl"; // Или замените на вашу иконку
 import { MdOutlineScience } from "react-icons/md";
-// import { MdScience } from "react-icons/md";
-import { DiAtom } from "react-icons/di";
 
 interface LogoProps {
   size?: number;
