@@ -1,22 +1,17 @@
 import React from "react";
-// import { SlAnchor } from "react-icons/sl";
-// import { TbAutomaticGearbox } from "react-icons/tb";
-import { GiPowerGenerator } from "react-icons/gi";
+// import { SlAnchor } from "react-icons/sl"; // Или замените на вашу иконку
+import { MdOutlineScience } from "react-icons/md";
+import { MdScience } from "react-icons/md";
 
 interface LogoProps {
   size?: number;
   color?: string;
-  text?: string;
 }
 
-const Logo: React.FC<LogoProps> = ({ size = 40, color = "#333", text = "КСАиИ" }) => {
+const Logo: React.FC<LogoProps> = ({ size = 50, color = "#333" }) => {
   return (
     <div className="logo">
-      <GiPowerGenerator className="logo-icon" size={size} color={color} />
-      {/* <TbAutomaticGearbox className="logo-icon" size={size} color={color} /> */}
-      {/* <SlAnchor className="logo-icon" size={size} color={color} /> */}
-
-      <h1 className="logo-text">{text}</h1>
+      <MdOutlineScience size={size} color={color} />
     </div>
   );
 };

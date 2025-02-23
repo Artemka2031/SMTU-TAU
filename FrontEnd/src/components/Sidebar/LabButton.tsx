@@ -5,7 +5,7 @@ interface LabButtonProps {
   text: string;
   onClick?: () => void;
   isActive?: boolean;
-  title?: string; // ✅ Добавляем `title`
+  title?: string; 
 }
 
 const LabButton: React.FC<LabButtonProps> = ({ icon, text, onClick, isActive = false, title }) => {

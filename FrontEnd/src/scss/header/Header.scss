@@ -13,7 +13,7 @@
   }
   
   .header-left {
-    width: 250px; // Фиксированная ширина
+    width: 150px; // Фиксированная ширина
     height: 60px;
   
     background-color: #F8F9FA;
@@ -32,6 +32,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between; // Разместит элементы по краям, можно использовать другое значение
-    padding: 0 16px;
+    padding: 0 20px;
   }
   

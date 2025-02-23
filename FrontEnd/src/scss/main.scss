@@ -3,12 +3,11 @@
 @use 'abstracts/fonts';
 @use 'base/reset';
 @use 'panel/Panel';
-@use 'sidebar/Siderbar';
+@use 'sidebar/Sidebar';
 @use 'maincontent/MainContent';
 @use 'header/Header';
 
 
-// Убираем скролл, подгоняем под 100vw/100vh
 html,
 body {
   width: 100vw;
@@ -21,14 +20,15 @@ body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: 250px 1fr; // sidebar фиксирован, main растягивается
-  grid-template-rows: 60px 1fr; // header фиксирован, остальная часть растягивается
+  grid-template-columns: 150px 1fr;
+  grid-template-rows: 60px 1fr;
   grid-template-areas:
     "header header"
     "sidebar main";
-  height: 100vh; // Чтобы контейнер занимал всю высоту
-  gap: 0; // Если не нужен отступ между колонками
-  padding: 0; // Уберите лишние отступы, если они мешают
+  height: 100vh;
+  gap: 0;
+  padding: 0;
+  margin: 0; 
 }
 
 

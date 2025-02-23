@@ -4,18 +4,23 @@
 
 .main {
     grid-area: main;
+    // max-width: 1770px; // Фиксируем максимальную ширину
+    flex-grow: 1;
     display: grid;
     grid-template-columns: 1.5fr 0.6fr; // Левая часть (65%), правая (35%)
     height: 100vh; // Растягиваем на всю высоту экрана
+    width: 100%;
+    max-width: unset;
     gap: 20px; // Добавляем отступ между колонками
-    // padding: 20px; // Отступы от краев экрана
-  }
+    margin-left: 0;
+    
+    }
   
   /* Левая часть (контент) */
   .left-content {
     background-color: rgb(255, 255, 255);
     width: 100%; // Теперь занимает всю доступную ширину в grid
-    max-width: 1200px; // Фиксируем максимальную ширину
+    max-width: 1400px; // Фиксируем максимальную ширину
     padding: 20px;
     display: flex;
     flex-direction: column;

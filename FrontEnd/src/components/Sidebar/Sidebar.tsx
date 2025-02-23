@@ -8,18 +8,25 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeLab, setActiveLab }) => {
-  const buttonData = ["1 ЛР: Дифференцирующее звено с замедлением", "2 ЛР: Аперодическое звено звено I порядка", "3 ЛР: Аперодическое звено II порядка", "4 ЛР: Колебательное звено", "5 ЛР: Исследование разомкнутой системы","6 ЛР: Замкнутая система"];
+  const buttonData = [
+    { short: "1 ЛР", full: "1 ЛР: Дифференциальные уравнения" },
+    { short: "2 ЛР", full: "2 ЛР: Аперодические звенья" },
+    { short: "3 ЛР", full: "3 ЛР: Аперодические звенья" },
+    { short: "4 ЛР", full: "4 ЛР: Колебательные звенья" },
+    { short: "5 ЛР", full: "5 ЛР: Исследование переходных процессов" },
+    { short: "6 ЛР", full: "6 ЛР: Замкнутая система управления" }
+  ];
 
   return (
     <nav className="sidebar">
-      {buttonData.map((text) => (
+      {buttonData.map(({ short, full }) => (
         <LabButton
-          key={text}
+          key={full}
           icon={<GoGraph />}
-          text={text}
-          title={text} // ✅ Добавляем `title`
-          isActive={activeLab === text}
-          onClick={() => setActiveLab(text)}
+          text={short} // Показываем только "1 ЛР"
+          title={full} // Полное название при наведении
+          isActive={activeLab === full}
+          onClick={() => setActiveLab(full)}
         />
       ))}
     </nav>
