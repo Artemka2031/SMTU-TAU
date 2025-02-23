@@ -9,7 +9,7 @@ const Header: React.FC = () => {
   return (
     <header className="header">
       <div className="header-left">
-        <Logo size={50} color="#0057B8" text="КСАиИ" /> {/* Используем новый компонент */}
+        <Logo size={50}/> {/* Используем новый компонент */}
       </div>
       <div className="header-right">
         <nav>
