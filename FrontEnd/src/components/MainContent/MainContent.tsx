@@ -1,27 +1,48 @@
-import React, { useState } from "react";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store";
 import Panel from "../Panel/Panel";
 import TipeLabButton from "./TipeLabButton";
+import { setActiveGraphForLab } from "../../store/slices/directionSlice";
 
-interface MainContentProps {
-  activeLab: string;
-}
+const MainContent: React.FC = () => {
+  const dispatch = useDispatch();
+  const { directions, activeDirection, activeLab } = useSelector(
+    (state: RootState) => state.direction
+  );
 
-const MainContent: React.FC<MainContentProps> = ({ activeLab }) => {
-  const [activeButton, setActiveButton] = useState("ПХ");
+  // Находим текущую ЛР
+  const currentDir = directions.find((dir) => dir.name === activeDirection);
+  const labData = currentDir?.labs.find((lab) => lab.full === activeLab);
+
+  if (!labData) {
+    return (
+      <div className="main">
+        <p>Выберите лабораторную работу</p>
+      </div>
+    );
+  }
+
+  const { full, graphs = [], activeGraph = "", graphLog = [] } = labData;
+
+  // При клике на график -> диспатчим setActiveGraphForLab
+  const handleSelectGraph = (graph: string) => {
+    dispatch(setActiveGraphForLab({ labFull: full, graph }));
+  };
 
   return (
     <div className="main">
       <div className="left-content">
         {/* Верхняя часть (заголовок + кнопки) */}
         <div className="top-bar">
-          <h2 title={activeLab}>{activeLab}</h2> {/* Подсказка при наведении */}
+          <h2 title={full}>{full}</h2>
           <div className="buttons">
-            {["ПХ", "АЧХ", "ФЧХ", "АФЧХ", "ЛАФЧХ"].map((label) => (
+            {graphs.map((g) => (
               <TipeLabButton
-                key={label}
-                label={label}
-                isActive={activeButton === label}
-                onClick={() => setActiveButton(label)}
+                key={g}
+                label={g}
+                isActive={activeGraph === g}  // сравниваем с labData.activeGraph
+                onClick={() => handleSelectGraph(g)}
               />
             ))}
           </div>
@@ -29,11 +50,21 @@ const MainContent: React.FC<MainContentProps> = ({ activeLab }) => {
 
         {/* Нижняя часть (график) */}
         <div className="graph-area">
-          <p>Здесь будет график...</p>
+          {/* Показываем выбранный график */}
+          <p>Здесь будет график: {activeGraph}</p>
+
+          {/* Вывод лога "добавленных" или "очищенных" графиков */}
+          <div style={{ marginTop: "20px" }}>
+            <p><b>Лог действий:</b></p>
+            {graphLog.length === 0 ? (
+              <p>Пока нет добавленных графиков</p>
+            ) : (
+              graphLog.map((msg, idx) => <div key={idx}>{msg}</div>)
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Правая панель */}
       <div className="right-content">
         <Panel />
       </div>

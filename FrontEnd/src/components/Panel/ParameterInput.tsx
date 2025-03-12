@@ -1,18 +1,24 @@
 import React from 'react';
 
 interface ParameterInputProps {
-  label: string;
-  placeholder?: string;
+  paramName: string;
+  paramValue: string;
+  onChangeValue: (newValue: string) => void;
 }
 
 const ParameterInput: React.FC<ParameterInputProps> = ({
-  label,
-  placeholder = 'Данные'
+  paramName,
+  paramValue,
+  onChangeValue
 }) => {
   return (
     <div className="parameter-input">
-      <label>{label}</label>
-      <input type="text" placeholder={placeholder} />
+      <label>{paramName}</label>
+      <input
+        type="text"
+        value={paramValue}
+        onChange={(e) => onChangeValue(e.target.value)}
+      />
     </div>
   );
 };

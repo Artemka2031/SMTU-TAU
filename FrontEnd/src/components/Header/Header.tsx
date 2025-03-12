@@ -1,25 +1,36 @@
-import React, { useState } from "react";
-import Logo from "./Logo"; // Импортируем новый компонентimport { CiMenuBurger } from "react-icons/ci";
-import HeadButton from "./Headbutton"; // Импортируем новый компонент
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store";
+import { setActiveDirection } from "../../store/slices/directionSlice";
+import Logo from "./Logo";
 import { CiMenuBurger } from "react-icons/ci";
+import HeadButton from "./Headbutton.tsx";
 
 const Header: React.FC = () => {
-  const [activeButton, setActiveButton] = useState("ТАУ Лин"); // Следим за активной кнопкой
+  const dispatch = useDispatch();
+  const activeDirection = useSelector((state: RootState) => state.direction.activeDirection);
+
+  // Список направлений (можно вынести в initialState, если нужно)
+  const directions = ["OA", "ТАУ Лин", "ТАУ Нелин", "ТДЗ"];
+
+  const handleClick = (dir: string) => {
+    dispatch(setActiveDirection(dir));
+  };
 
   return (
     <header className="header">
       <div className="header-left">
-        <Logo size={50}/> {/* Используем новый компонент */}
+        <Logo size={50} />
       </div>
       <div className="header-right">
         <nav>
           <ul className="nav-buttons">
-            {["OA", "ТАУ Лин", "ТАУ Нелин", "ТДЗ"].map((label) => (
+            {directions.map((label) => (
               <li key={label}>
                 <HeadButton
                   label={label}
-                  isActive={activeButton === label}
-                  onClick={() => setActiveButton(label)}
+                  isActive={activeDirection === label}
+                  onClick={() => handleClick(label)}
                 />
               </li>
             ))}

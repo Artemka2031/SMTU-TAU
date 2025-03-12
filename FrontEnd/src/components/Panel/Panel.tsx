@@ -1,41 +1,97 @@
-import React from 'react';
-import ParameterInput from './ParameterInput';
-import NoteInput from './NoteInput';
-import GraphButton from './GraphButton';
-import DeleteButton from './DeleteButton';
-import { FaChartLine, FaImage, FaDownload } from 'react-icons/fa';
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store";
+import {
+  addGraph,
+  clearGraphs,
+  exportGraphs,
+  updateLabParameter,
+  updateNote
+} from "../../store/slices/directionSlice";
+
+import ParameterInput from "./ParameterInput";
+import NoteInput from "./NoteInput";
+import GraphButton from "./GraphButton";
+import DeleteButton from "./DeleteButton";
+import { FaChartLine, FaImage, FaDownload } from "react-icons/fa";
 
 const Panel: React.FC = () => {
-  const handleDelete = () => {
-    console.log('Delete clicked');
-  };
+  const dispatch = useDispatch();
+  const { directions, activeDirection, activeLab } = useSelector(
+    (state: RootState) => state.direction
+  );
+
+  // Ищем текущую ЛР
+  const currentDir = directions.find((dir) => dir.name === activeDirection);
+  const labData = currentDir?.labs.find((l) => l.full === activeLab);
 
   return (
     <div className="panel">
-        <h2><b>Панель параметров</b></h2>
+      <h2>
+        <b>Панель параметров</b>
+      </h2>
 
-      {/* Блок параметров располагается вверху */}
-      <div className="parameters">
-        <ParameterInput label="K" />
-        <ParameterInput label="Xm" />
-        <ParameterInput label="T" />
-        <ParameterInput label="W0" />
-        <ParameterInput label="Wn" />
-        <ParameterInput label="Шаг" />
-        <ParameterInput label="t" />
-{/* 
-        <ParameterInput label="Хуй" />
-        <ParameterInput label="t" /> */}
-      </div>
+      {/* Если ЛР не выбрана, показываем заглушку, но при этом "панель" сохраняем */}
+      {!labData ? (
+        <p>Выберите лабораторную работу</p>
+      ) : (
+        <>
+          {/* Параметры */}
+          <div className="parameters">
+            {labData.parameters.map((param) => (
+              <ParameterInput
+                key={param.name}
+                paramName={param.name}
+                paramValue={param.value}
+                onChangeValue={(newVal) =>
+                  dispatch(
+                    updateLabParameter({
+                      labFull: labData.full,
+                      paramName: param.name,
+                      newValue: newVal
+                    })
+                  )
+                }
+              />
+            ))}
+          </div>
 
-      {/* Блок с примечанием и кнопками – прижат к низу */}
-      <div className="bottom-block">
-        <NoteInput note="Примечание..." />
-        <GraphButton text="Добавть график" icon={<FaChartLine />} />
-        <GraphButton text="Экспорт PNG" icon={<FaImage />} />
-        <GraphButton text="Экспорт SVG" icon={<FaDownload />} />
-        <DeleteButton onDelete={handleDelete} />
-      </div>
+          {/* Примечание */}
+          <NoteInput
+            note={labData.note}
+            onChangeNote={(newNote) =>
+              dispatch(
+                updateNote({
+                  labFull: labData.full,
+                  newNote
+                })
+              )
+            }
+          />
+
+          {/* Кнопки внизу */}
+          <div className="bottom-block">
+            <GraphButton
+              text="Добавить график"
+              icon={<FaChartLine />}
+              onClick={() => dispatch(addGraph({ labFull: labData.full }))}
+            />
+            <GraphButton
+              text="Экспорт PNG"
+              icon={<FaImage />}
+              onClick={() => dispatch(exportGraphs({ labFull: labData.full }))}
+            />
+            <GraphButton
+              text="Экспорт SVG"
+              icon={<FaDownload />}
+              onClick={() => dispatch(exportGraphs({ labFull: labData.full }))}
+            />
+            <DeleteButton
+              onDelete={() => dispatch(clearGraphs({ labFull: labData.full }))}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

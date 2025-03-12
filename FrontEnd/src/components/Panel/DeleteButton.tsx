@@ -7,9 +7,10 @@ interface DeleteButtonProps {
 const DeleteButton: React.FC<DeleteButtonProps> = ({ onDelete }) => {
   return (
     <button className="delete-button" onClick={onDelete}>
-      Отчистить
+      Очистить
     </button>
   );
 };
+
 
 export default DeleteButton;
