@@ -5,13 +5,13 @@
 
 .panel {
   /* Квадратная панель с фиксированными размерами по высоте и адаптивной шириной */
-  width: 22vw;
-  height: 95vh;
-  border: 1px solid #ddd;
+  width: 400px;
+  height: 1080;
+  // border: 1px solid #ddd;
   border-radius: 1vh;
-  padding: 2vh 2vw;
+  // padding: 2vh 2vw;
   background-color: #fff;
-  box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.1);
   margin: 2.5vh auto;
   display: flex;
   flex-direction: column;
@@ -24,10 +24,10 @@
     font-size: 2vh;
   }
 
-  /* Контейнер для параметров */
-  .parameters {
-    /* Располагается вверху – можно добавить отступы, если необходимо */
-  }
+  // /* Контейнер для параметров */
+  // .parameters {
+  //   /* Располагается вверху – можно добавить отступы, если необходимо */
+  // }
 
   /* Контейнер для примечания и кнопок – прижат к низу */
   .bottom-block {

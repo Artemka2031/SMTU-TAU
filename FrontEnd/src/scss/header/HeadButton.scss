@@ -1,0 +1,33 @@
+.head-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    color: #333;
+    transition: background 0.3s;
+  
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  
+    &.active {
+      background: #333;
+      color: white;
+    }
+  }
+  
+  .nav-buttons {
+    display: flex;
+    gap: 16px;
+    list-style: none;
+    padding: 0;
+  }
+  
+  .menu-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
