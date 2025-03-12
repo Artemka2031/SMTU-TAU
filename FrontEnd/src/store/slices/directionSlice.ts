@@ -5,33 +5,45 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // ----------------------
 
 /**
- * Параметр с названием, значением и, возможно, минимум/максимум или описанием.
- * В вашем PyQt-коде есть "K", "Xm" и т.д. со значениями по умолчанию.
- * Здесь мы храним { name: "K", value: "3.0" } и т.д.
+ * Параметр: name ("K", "Шаг", "t" и т.д.) + текущее value
  */
 export interface ParamItem {
-  name: string;    // "K"
-  value: string;   // "3.0"
+  name: string;
+  value: string;
 }
 
 /**
- * Описание набора данных (series) в графике.
- * Например, можно хранить массив точек, но для упрощения - только id и описание.
+ * Набор данных (серия) в одном графике:
+ * id: порядковый номер
+ * title: "График (ПХ) №1"
+ * x, y: точки
  */
 interface GraphData {
   id: number;
-  description: string; // "Graph #1", ...
+  title: string;
+  x: number[];
+  y: number[];
 }
 
 /**
- * Описание одной лабораторной работы в Redux:
- *  - short, full          : краткое и полное название.
- *  - parameters           : массив ParamItem, чтобы хранить текущее значение для каждого параметра.
- *  - graphs               : список доступных типов графиков (ПХ, АЧХ...).
- *  - activeGraph          : какой график сейчас выбран.
- *  - graphStorage         : для КАЖДОГО типа графика массив построенных GraphData (результат "Добавить график").
- *  - graphLog             : лог действий (добавление, экспорт, очистка).
- *  - note                 : текстовое поле «Примечание для данной ЛР».
+ * Настройки для осей и логарифма:
+ *  - xLabel, yLabel: подписи осей
+ *  - logX: переключатель логарифмической шкалы
+ */
+interface AxisSettings {
+  xLabel: string;
+  yLabel: string;
+  logX: boolean;
+}
+
+/**
+ * Лабораторная работа:
+ *  - parameters: массив ParamItem (K, t, Шаг, ...)
+ *  - graphs: список типов ("ПХ", "АЧХ", ...)
+ *  - activeGraph: текущий тип
+ *  - graphStorage: для КАЖДОГО типа массив GraphData (несколько построенных серий)
+ *  - graphAxes: для КАЖДОГО типа заданы настройки осей (axisLabels)
+ *  - note: примечание
  */
 export interface LabDefinition {
   short: string;
@@ -40,12 +52,12 @@ export interface LabDefinition {
   graphs: string[];
   activeGraph: string;
   graphStorage: { [graphName: string]: GraphData[] };
-  graphLog: string[];
+  graphAxes?: { [graphName: string]: AxisSettings };
   note: string;
 }
 
 /**
- * Направление: "ТАУ Нелин", "ТАУ Лин" и т.д., каждая содержит массив ЛР.
+ * Направление: "ТАУ Лин", "ТАУ Нелин", ...
  */
 interface DirectionItem {
   name: string;
@@ -53,11 +65,11 @@ interface DirectionItem {
 }
 
 /**
- * Полное состояние для слайса direction.
+ * Состояние всего слайса
  */
 interface DirectionState {
-  activeDirection: string;        // "ТАУ Нелин"
-  activeLab: string | null;       // полное название ЛР
+  activeDirection: string;
+  activeLab: string | null;
   directions: DirectionItem[];
 }
 
@@ -79,7 +91,6 @@ const initialState: DirectionState = {
         {
           short: "1 ЛР",
           full: "1 ЛР: Линейные системы, пример",
-          // Параметры (с дефолтными значениями)
           parameters: [
             { name: "K", value: "3.0" },
             { name: "Xm", value: "4.0" },
@@ -93,7 +104,12 @@ const initialState: DirectionState = {
             "АЧХ": [],
             "ФЧХ": []
           },
-          graphLog: [],
+          // Для примера: настройки осей
+          graphAxes: {
+            "ПХ": { xLabel: "Время", yLabel: "Амплитуда", logX: false },
+            "АЧХ": { xLabel: "Частота, рад/с", yLabel: "Амплитуда", logX: true },
+            "ФЧХ": { xLabel: "Частота, рад/с", yLabel: "Фаза, °", logX: true }
+          },
           note: "Примечание для 1 ЛР (Лин)"
         },
         {
@@ -112,7 +128,11 @@ const initialState: DirectionState = {
             "АФЧХ": [],
             "ЛАФЧХ": []
           },
-          graphLog: [],
+          graphAxes: {
+            "ПХ": { xLabel: "Время", yLabel: "Амплитуда", logX: false },
+            "АФЧХ": { xLabel: "Re", yLabel: "Im", logX: false },
+            "ЛАФЧХ": { xLabel: "Частота, рад/с", yLabel: "дБ", logX: true }
+          },
           note: "Примечание для 2 ЛР (Лин)"
         }
       ]
@@ -139,7 +159,13 @@ const initialState: DirectionState = {
             "АФЧХ": [],
             "ЛАФЧХ": []
           },
-          graphLog: [],
+          graphAxes: {
+            "ПХ": { xLabel: "Время", yLabel: "Амплитуда", logX: false },
+            "АЧХ": { xLabel: "Частота, рад/с", yLabel: "Амплитуда", logX: true },
+            "ФЧХ": { xLabel: "Частота, рад/с", yLabel: "Фаза, °", logX: true },
+            "АФЧХ": { xLabel: "Re", yLabel: "Im", logX: false },
+            "ЛАФЧХ": { xLabel: "Частота, рад/с", yLabel: "дБ", logX: true }
+          },
           note: "Примечание для 1 ЛР (Нелин)"
         },
         {
@@ -161,7 +187,13 @@ const initialState: DirectionState = {
             "АФЧХ": [],
             "ЛАФЧХ": []
           },
-          graphLog: [],
+          graphAxes: {
+            "ПХ": { xLabel: "Время", yLabel: "Амплитуда", logX: false },
+            "АЧХ": { xLabel: "Частота, рад/с", yLabel: "Амплитуда", logX: true },
+            "ФЧХ": { xLabel: "Частота, рад/с", yLabel: "Фаза, °", logX: true },
+            "АФЧХ": { xLabel: "Re", yLabel: "Im", logX: false },
+            "ЛАФЧХ": { xLabel: "Частота, рад/с", yLabel: "дБ", logX: true }
+          },
           note: "Примечание для 2 ЛР (Нелин)"
         },
         {
@@ -184,7 +216,13 @@ const initialState: DirectionState = {
             "АФЧХ": [],
             "ЛАФЧХ": []
           },
-          graphLog: [],
+          graphAxes: {
+            "ПХ": { xLabel: "Время", yLabel: "Амплитуда", logX: false },
+            "АЧХ": { xLabel: "Частота, рад/с", yLabel: "Амплитуда", logX: true },
+            "ФЧХ": { xLabel: "Частота, рад/с", yLabel: "Фаза, °", logX: true },
+            "АФЧХ": { xLabel: "Re", yLabel: "Im", logX: false },
+            "ЛАФЧХ": { xLabel: "Частота, рад/с", yLabel: "дБ", logX: true }
+          },
           note: "Примечание для 3 ЛР (Нелин)"
         },
         {
@@ -206,7 +244,13 @@ const initialState: DirectionState = {
             "АФЧХ": [],
             "ЛАФЧХ": []
           },
-          graphLog: [],
+          graphAxes: {
+            "ПХ": { xLabel: "Время", yLabel: "Амплитуда", logX: false },
+            "АЧХ": { xLabel: "Частота, рад/с", yLabel: "Амплитуда", logX: true },
+            "ФЧХ": { xLabel: "Частота, рад/с", yLabel: "Фаза, °", logX: true },
+            "АФЧХ": { xLabel: "Re", yLabel: "Im", logX: false },
+            "ЛАФЧХ": { xLabel: "Частота, рад/с", yLabel: "дБ", logX: true }
+          },
           note: "Примечание для 4 ЛР (Нелин)"
         },
         {
@@ -227,7 +271,11 @@ const initialState: DirectionState = {
             "АФЧХ": [],
             "ЛАФЧХ": []
           },
-          graphLog: [],
+          graphAxes: {
+            "АЧХ": { xLabel: "Частота, рад/с", yLabel: "Амплитуда", logX: true },
+            "АФЧХ": { xLabel: "Re", yLabel: "Im", logX: false },
+            "ЛАФЧХ": { xLabel: "Частота, рад/с", yLabel: "дБ", logX: true }
+          },
           note: "Примечание для 5 ЛР (Нелин)"
         },
         {
@@ -248,7 +296,11 @@ const initialState: DirectionState = {
             "АФЧХ": [],
             "Годограф Михайлова": []
           },
-          graphLog: [],
+          graphAxes: {
+            "АЧХ": { xLabel: "Частота, рад/с", yLabel: "Амплитуда", logX: true },
+            "АФЧХ": { xLabel: "Re", yLabel: "Im", logX: false },
+            "Годограф Михайлова": { xLabel: "Re", yLabel: "Im", logX: false }
+          },
           note: "Примечание для 6 ЛР (Нелин)"
         }
       ]
@@ -268,18 +320,18 @@ export const directionSlice = createSlice({
   name: "direction",
   initialState,
   reducers: {
-    // Смена направления
+    // Переключение направления
     setActiveDirection(state, action: PayloadAction<string>) {
       state.activeDirection = action.payload;
       state.activeLab = null;
     },
 
-    // Смена активной ЛР
+    // Переключение ЛР
     setActiveLab(state, action: PayloadAction<string | null>) {
       state.activeLab = action.payload;
     },
 
-    // Сменить активный график в выбранной ЛР
+    // Переключение активного графика (ПХ, АЧХ и т.д.)
     setActiveGraphForLab(
       state,
       action: PayloadAction<{ labFull: string; graph: string }>
@@ -287,14 +339,14 @@ export const directionSlice = createSlice({
       const { labFull, graph } = action.payload;
       for (const dir of state.directions) {
         const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab) {
+        if (lab && lab.graphs.includes(graph)) {
           lab.activeGraph = graph;
           break;
         }
       }
     },
 
-    // Изменить значение параметра (например, пользователь ввёл K=5.0)
+    // Пользователь меняет параметр (например, Шаг, K, T...)
     updateLabParameter(
       state,
       action: PayloadAction<{ labFull: string; paramName: string; newValue: string }>
@@ -305,63 +357,89 @@ export const directionSlice = createSlice({
         if (lab) {
           const p = lab.parameters.find((pp) => pp.name === paramName);
           if (p) {
-            p.value = newValue; // Обновляем значение
+            // Если это "Шаг", делаем clamp до 0.01
+            if (paramName === "Шаг") {
+              const num = parseFloat(newValue);
+              p.value = (num < 0.01 ? 0.01 : num).toString();
+            } else {
+              p.value = newValue;
+            }
           }
           break;
         }
       }
     },
 
-    // Добавить "построенный" график в activeGraph
+    // Добавляем "график" (серию) во ВСЕ типы, а не только в активный
+    // Здесь будет вызов на Flask – пока mock
     addGraph(state, action: PayloadAction<{ labFull: string }>) {
       const { labFull } = action.payload;
       for (const dir of state.directions) {
         const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab && lab.activeGraph) {
-          const gName = lab.activeGraph;
-          // создаем массив, если нет
-          if (!lab.graphStorage[gName]) {
-            lab.graphStorage[gName] = [];
+        if (!lab) continue;
+
+        // Читаем параметр t, Шаг и т.д.
+        const pT = lab.parameters.find((pp) => pp.name === "t");
+        const pShag = lab.parameters.find((pp) => pp.name === "Шаг");
+        const tVal = pT ? parseFloat(pT.value) : 10;
+        const shagVal = pShag ? parseFloat(pShag.value) : 0.1;
+        // clamp шаг
+        const step = shagVal < 0.01 ? 0.01 : shagVal;
+
+        // Имитируем реальный вызов Flask:
+        // const response = await fetch(`http://localhost:5000/api/lab?lab=${lab.short}`, { ... });
+        // const data = await response.json();
+        // data.[typeGraph].x, data.[typeGraph].y etc.
+
+        // Пока делаем mock – сгенерируем синусы
+        lab.graphs.forEach((graphName) => {
+          const seriesArr = lab.graphStorage[graphName] || [];
+          const newId = seriesArr.length + 1;
+
+          const xVals: number[] = [];
+          const yVals: number[] = [];
+          for (let x = 0; x <= tVal; x += step) {
+            xVals.push(x);
+            // Небольшой shift чтобы графики не накладывались
+            yVals.push(Math.sin(x) + newId);
           }
-          const newId = lab.graphStorage[gName].length + 1;
-          lab.graphStorage[gName].push({
+
+          const newGraphData: GraphData = {
             id: newId,
-            description: `Graph #${newId} (для ${gName})`
-          });
-          // Добавляем запись в лог
-          lab.graphLog.push(`Добавлен график #${newId} для [${gName}]`);
-          break;
-        }
+            title: `График (${graphName}) №${newId}`,
+            x: xVals,
+            y: yVals
+          };
+
+          if (!lab.graphStorage[graphName]) {
+            lab.graphStorage[graphName] = [];
+          }
+          lab.graphStorage[graphName].push(newGraphData);
+        });
+
+        break;
       }
     },
 
-    // Очистить все графики у выбранной ЛР
+    // Очистить все серии (GraphData[]) во ВСЕХ типах
     clearGraphs(state, action: PayloadAction<{ labFull: string }>) {
       const { labFull } = action.payload;
       for (const dir of state.directions) {
         const lab = dir.labs.find((l) => l.full === labFull);
         if (lab) {
-          // чистим все графы
-          for (const g of Object.keys(lab.graphStorage)) {
-            lab.graphStorage[g] = [];
-          }
-          lab.graphLog.push("Все графики очищены");
+          Object.keys(lab.graphStorage).forEach((graphName) => {
+            lab.graphStorage[graphName] = [];
+          });
           break;
         }
       }
     },
 
-    // "Экспорт" – добавляем запись в log
-    exportGraphs(state, action: PayloadAction<{ labFull: string }>) {
-      const { labFull } = action.payload;
-      for (const dir of state.directions) {
-        const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab) {
-          lab.graphLog.push("Экспорт выполнен");
-          break;
-        }
-      }
-    },
+    // // "Экспорт" – при реальном проекте сделаем вызов на бэкенд
+    // exportGraphs(state, action: PayloadAction<{ labFull: string }>) {
+    //   // Пока пустой
+    //   console.log("Экспорт (пока заглушка) для", action.payload.labFull);
+    // },
 
     // Обновить примечание
     updateNote(state, action: PayloadAction<{ labFull: string; newNote: string }>) {
@@ -373,7 +451,7 @@ export const directionSlice = createSlice({
           break;
         }
       }
-    },
+    }
   }
 });
 
