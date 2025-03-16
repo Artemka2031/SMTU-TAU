@@ -435,11 +435,11 @@ export const directionSlice = createSlice({
       }
     },
 
-    // // "Экспорт" – при реальном проекте сделаем вызов на бэкенд
-    // exportGraphs(state, action: PayloadAction<{ labFull: string }>) {
-    //   // Пока пустой
-    //   console.log("Экспорт (пока заглушка) для", action.payload.labFull);
-    // },
+    // "Экспорт" – при реальном проекте сделаем вызов на бэкенд
+    exportGraphs(state, action: PayloadAction<{ labFull: string }>) {
+      // Пока пустой
+      console.log("Экспорт (пока заглушка) для", action.payload.labFull);
+    },
 
     // Обновить примечание
     updateNote(state, action: PayloadAction<{ labFull: string; newNote: string }>) {
