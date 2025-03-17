@@ -1,11 +1,10 @@
-# labs/serializers.py
 from rest_framework import serializers
 from .models import Direction, LabWork, LabParameter, GraphType
 
 class LabParameterSerializer(serializers.ModelSerializer):
     class Meta:
         model = LabParameter
-        fields = ('name', 'value')  # id нам не очень нужен на фронте
+        fields = ('name', 'value')
 
 class GraphTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,10 +17,8 @@ class LabWorkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LabWork
-        fields = (
-            'id', 'short', 'full', 'note', 'active_graph',
-            'parameters', 'graphs',
-        )
+        # calc_module не включаем в GET представление
+        fields = ('id', 'short', 'full', 'note', 'active_graph', 'parameters', 'graphs')
 
 class DirectionSerializer(serializers.ModelSerializer):
     labs = LabWorkSerializer(many=True, read_only=True)

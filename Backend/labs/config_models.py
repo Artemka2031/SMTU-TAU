@@ -10,6 +10,7 @@ class LabConfig(BaseModel):
     default_graphs: Dict[str, Tuple[str, str, bool]] = Field(
         ..., description="Словарь графиков. Ключ — название графика, значение — кортеж (x_label, y_label, log_x)"
     )
+    calc_function: str = Field(..., description="Полностью квалифицированное имя функции calculate_all_functions")
 
     @field_validator('short', 'full', 'note')
     def non_empty(cls, v):

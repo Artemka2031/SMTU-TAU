@@ -4,7 +4,6 @@ import { RootState } from "../../store";
 import {
   addGraph,
   clearGraphs,
-  exportGraphs,
   updateLabParameter,
   updateNote
 } from "../../store/slices/directionSlice";
@@ -13,7 +12,7 @@ import ParameterInput from "./ParameterInput";
 import NoteInput from "./NoteInput";
 import GraphButton from "./GraphButton";
 import DeleteButton from "./DeleteButton";
-import { FaChartLine, FaImage, FaDownload } from "react-icons/fa";
+import { FaChartLine } from "react-icons/fa";
 
 const Panel: React.FC = () => {
   const dispatch = useDispatch();
@@ -48,7 +47,7 @@ const Panel: React.FC = () => {
                     updateLabParameter({
                       labFull: labData.full,
                       paramName: param.name,
-                      newValue: newVal
+                      newValue: newVal,
                     })
                   )
                 }
@@ -63,7 +62,7 @@ const Panel: React.FC = () => {
               dispatch(
                 updateNote({
                   labFull: labData.full,
-                  newNote
+                  newNote,
                 })
               )
             }
@@ -75,16 +74,6 @@ const Panel: React.FC = () => {
               text="Добавить график"
               icon={<FaChartLine />}
               onClick={() => dispatch(addGraph({ labFull: labData.full }))}
-            />
-            <GraphButton
-              text="Экспорт PNG"
-              icon={<FaImage />}
-              onClick={() => dispatch(exportGraphs({ labFull: labData.full }))}
-            />
-            <GraphButton
-              text="Экспорт SVG"
-              icon={<FaDownload />}
-              onClick={() => dispatch(exportGraphs({ labFull: labData.full }))}
             />
             <DeleteButton
               onDelete={() => dispatch(clearGraphs({ labFull: labData.full }))}
