@@ -10,7 +10,7 @@ from labs.base_lab import BaseLab
 # ==============================
 class Lab4_TAU_Lin(BaseLab):
     short = "4 ЛР"
-    full = "Лабораторная работа 4: Колебательное звено"
+    full = "Колебательное звено"
     note = "Примечание для ЛР4 (Колебательное звено)"
     active_graph = "ПХ"
     default_params = {
@@ -86,7 +86,7 @@ class Lab4_TAU_Lin(BaseLab):
         x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = cls.calculate_LAFCH(K, T, xi, count_of_dots, w_end)
 
         return {
-            "Переходная характеристика": {"x": x_PH, "y": y_PH, "desc": f"ПХ: K={K}, T={T}, ξ={xi}"},
+            "ПХ": {"x": x_PH, "y": y_PH, "desc": f"ПХ: K={K}, T={T}, ξ={xi}"},
             "АЧХ": {"x": x_ACH, "y": y_ACH, "desc": f"АЧХ: K={K}, T={T}, ξ={xi}"},
             "ФЧХ": {"x": x_FCHH, "y": y_FCHH, "desc": f"ФЧХ: T={T}, ξ={xi}"},
             "АФЧХ": {"x": Re_AFCH, "y": Im_AFCH, "desc": f"АФЧХ: K={K}, T={T}, ξ={xi}"},

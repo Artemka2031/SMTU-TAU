@@ -12,12 +12,10 @@ const MainContent: React.FC = () => {
     (state: RootState) => state.direction
   );
 
-  // Находим текущее направление
+  // Находим текущее направление и лабораторную работу
   const currentDir = directions.find((dir) => dir.name === activeDirection);
-  // Находим текущую ЛР
-  const labData = currentDir?.labs.find((lab) => lab.full === activeLab);
+  const labData = currentDir?.labs.find((l) => l.full === activeLab);
 
-  // Если ЛР не выбрана
   if (!labData) {
     return (
       <div className="main">
@@ -31,32 +29,54 @@ const MainContent: React.FC = () => {
     );
   }
 
-  // Извлекаем нужные поля
   const { full, graphs, activeGraph, graphStorage, graphAxes } = labData;
-
-  // Серии (GraphData[]) для активного графика
-  const currentSeries = graphStorage[activeGraph] || [];
-
-  // Настройки осей для активного графика
+  // Настройки осей
   const axisSettings = graphAxes?.[activeGraph] || {
     xLabel: "X",
     yLabel: "Y",
     logX: false
   };
 
-  // Переключение типа графика
   const handleSelectGraph = (graphName: string) => {
     dispatch(setActiveGraphForLab({ labFull: full, graph: graphName }));
   };
 
+  // Сформируем список кнопок: если есть "ЛАФЧХ (амплитуда)" и "ЛАФЧХ (фаза)",
+  // то объединим их в одну кнопку "ЛАФЧХ".
+  let displayGraphs: string[] = [];
+  if (
+    graphs.includes("ЛАФЧХ (амплитуда)") &&
+    graphs.includes("ЛАФЧХ (фаза)")
+  ) {
+    // убираем "ЛАФЧХ (амплитуда)" и "ЛАФЧХ (фаза)"
+    displayGraphs = graphs.filter(
+      (g) => g !== "ЛАФЧХ (амплитуда)" && g !== "ЛАФЧХ (фаза)"
+    );
+    // добавляем общую "ЛАФЧХ"
+    if (!displayGraphs.includes("ЛАФЧХ")) {
+      displayGraphs.push("ЛАФЧХ");
+    }
+  } else {
+    displayGraphs = graphs;
+  }
+
+  // Определяем, надо ли рисовать "ЛАФЧХ".
+  const isCombinedLAFCH = (activeGraph === "ЛАФЧХ");
+
+  // Если это "ЛАФЧХ", берём данные из graphStorage["ЛАФЧХ (амплитуда)"] и ["ЛАФЧХ (фаза)"]
+  const lafchAmplitude = graphStorage["ЛАФЧХ (амплитуда)"] || [];
+  const lafchPhase = graphStorage["ЛАФЧХ (фаза)"] || [];
+
+  // Если граф не "ЛАФЧХ", просто берём currentSeries
+  const currentSeries = graphStorage[activeGraph] || [];
+
   return (
     <div className="main">
-      {/* Левая часть */}
       <div className="left-content">
         <div className="top-bar">
           <h2>{full}</h2>
           <div className="buttons">
-            {graphs.map((g) => (
+            {displayGraphs.map((g) => (
               <TipeLabButton
                 key={g}
                 label={g}
@@ -69,14 +89,16 @@ const MainContent: React.FC = () => {
 
         <div className="graph-area">
           <PlotlyGraph
-            dataSeries={currentSeries}
             graphName={activeGraph}
-            axisSettings={axisSettings}  // Передаём настройки осей
+            axisSettings={axisSettings}
+            dataSeries={currentSeries}
+            // Если "ЛАФЧХ" – передаем амплитуду/фазу. Иначе нет.
+            lafchAmplitude={isCombinedLAFCH ? lafchAmplitude : undefined}
+            lafchPhase={isCombinedLAFCH ? lafchPhase : undefined}
           />
         </div>
       </div>
 
-      {/* Правая часть */}
       <div className="right-content">
         <Panel />
       </div>

@@ -11,7 +11,7 @@ from labs.base_lab import BaseLab
 # ==============================
 class Lab5_TAU_Lin(BaseLab):
     short = "5 ЛР"
-    full = "Лабораторная работа 5: Исследование разомкнутой системы"
+    full = "Исследование разомкнутой системы"
     note = "Примечание для ЛР5 (Исследование разомкнутой системы)"
     active_graph = "АЧХ"
     default_params = {

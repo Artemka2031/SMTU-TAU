@@ -10,7 +10,7 @@ from labs.base_lab import BaseLab
 # ==============================
 class Lab1_TAU_Lin(BaseLab):
     short = "1 ЛР"
-    full = "1 ЛР: Линейные системы, пример"
+    full = "1 ЛР: Линейные системы"
     note = "Примечание для 1 ЛР (Лин)"
     active_graph = "ПХ"
 
@@ -92,7 +92,7 @@ class Lab1_TAU_Lin(BaseLab):
         x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = cls.calculate_LAFCH(K, T, count_of_dots, w_end)
 
         return {
-            "Переходная характеристика": {"x": x_PH, "y": y_PH, "desc": f"ПХ: K={K}, Xm={Xm}, T={T}"},
+            "ПХ": {"x": x_PH, "y": y_PH, "desc": f"ПХ: K={K}, Xm={Xm}, T={T}"},
             "АЧХ": {"x": x_ACH, "y": y_ACH, "desc": f"АЧХ: K={K}, Xm={Xm}, T={T}"},
             "ФЧХ": {"x": x_FCHH, "y": y_FCHH, "desc": f"ФЧХ: T={T}"},
             "АФЧХ": {"x": Re_AFCH, "y": Im_AFCH, "desc": f"АФЧХ: K={K}, T={T}"},

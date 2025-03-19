@@ -10,7 +10,7 @@ from labs.base_lab import BaseLab
 # ==============================
 class Lab3_TAU_Lin(BaseLab):
     short = "3 ЛР"
-    full = "Лабораторная работа 3: Аперодическое звено II порядка"
+    full = "Аперодическое звено II порядка"
     note = "Примечание для ЛР3 (Аперодическое звено II порядка)"
     active_graph = "ПХ"
     default_params = {
@@ -85,7 +85,7 @@ class Lab3_TAU_Lin(BaseLab):
         x_LAFCH, y_LAFCH_mag, y_LAFCH_phase = cls.calculate_LAFCH(K1, K2, T1, T2, count_of_dots, w_end)
 
         return {
-            "Переходная характеристика": {"x": x_PH, "y": y_PH, "desc": f"ПХ: K1={K1}, K2={K2}, T1={T1}, T2={T2}"},
+            "ПХ": {"x": x_PH, "y": y_PH, "desc": f"ПХ: K1={K1}, K2={K2}, T1={T1}, T2={T2}"},
             "АЧХ": {"x": x_ACH, "y": y_ACH, "desc": f"АЧХ: K1={K1}, K2={K2}, T1={T1}, T2={T2}"},
             "ФЧХ": {"x": x_FCHH, "y": y_FCHH, "desc": f"ФЧХ: T1={T1}, T2={T2}"},
             "АФЧХ": {"x": Re_AFCH, "y": Im_AFCH, "desc": f"АФЧХ: K1={K1}, K2={K2}, T1={T1}, T2={T2}"},

@@ -10,7 +10,7 @@ from labs.base_lab import BaseLab
 # ==============================
 class Lab6_TAU_Lin(BaseLab):
     short = "6 ЛР"
-    full = "Лабораторная работа 6: Замкнутая система"
+    full = "Замкнутая система"
     note = "Примечание для ЛР6 (Замкнутая система с годографом Михайлова)"
     active_graph = "АЧХ"
     default_params = {

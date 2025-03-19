@@ -1,28 +1,46 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store";
+import { AppDispatch, RootState } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addGraph,
-  clearGraphs,
   updateLabParameter,
-  updateNote
-} from "../../store/slices/directionSlice";
-
-import ParameterInput from "./ParameterInput";
-import NoteInput from "./NoteInput";
-import GraphButton from "./GraphButton";
-import DeleteButton from "./DeleteButton";
+  updateNote,
+  clearGraphs, calculateLab
+} from "../../store/slices/directionSlice.ts";
+import ParameterInput from "./ParameterInput.tsx";
+import NoteInput from "./NoteInput.tsx";
+import GraphButton from "./GraphButton.tsx";
+import DeleteButton from "./DeleteButton.tsx";
 import { FaChartLine } from "react-icons/fa";
 
 const Panel: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { directions, activeDirection, activeLab } = useSelector(
     (state: RootState) => state.direction
   );
 
-  // Ищем текущую ЛР
   const currentDir = directions.find((dir) => dir.name === activeDirection);
   const labData = currentDir?.labs.find((l) => l.full === activeLab);
+
+  const handleAddGraph = () => {
+    if (!labData) return;
+
+    // Отправка действия на добавление графика в graphStorage
+    dispatch(addGraph({ labFull: labData.full }));
+
+    // Создаем тело запроса для расчета графиков
+    const bodyParams = Object.fromEntries(
+      labData.parameters.map((p) => [p.name, p.value])
+    );
+
+    // Отправка запроса на расчет графиков
+    dispatch(
+      calculateLab({
+        directionId: currentDir?.id || 0,
+        labId: labData.id,
+        bodyParams
+      })
+    );
+  };
 
   return (
     <div className="panel">
@@ -30,12 +48,10 @@ const Panel: React.FC = () => {
         <b>Панель параметров</b>
       </h2>
 
-      {/* Если ЛР не выбрана, показываем заглушку, но при этом "панель" сохраняем */}
       {!labData ? (
         <p>Выберите лабораторную работу</p>
       ) : (
         <>
-          {/* Параметры */}
           <div className="parameters">
             {labData.parameters.map((param) => (
               <ParameterInput
@@ -47,7 +63,7 @@ const Panel: React.FC = () => {
                     updateLabParameter({
                       labFull: labData.full,
                       paramName: param.name,
-                      newValue: newVal,
+                      newValue: newVal
                     })
                   )
                 }
@@ -55,25 +71,23 @@ const Panel: React.FC = () => {
             ))}
           </div>
 
-          {/* Примечание */}
           <NoteInput
             note={labData.note}
             onChangeNote={(newNote) =>
               dispatch(
                 updateNote({
                   labFull: labData.full,
-                  newNote,
+                  newNote
                 })
               )
             }
           />
 
-          {/* Кнопки внизу */}
           <div className="bottom-block">
             <GraphButton
               text="Добавить график"
               icon={<FaChartLine />}
-              onClick={() => dispatch(addGraph({ labFull: labData.full }))}
+              onClick={handleAddGraph}
             />
             <DeleteButton
               onDelete={() => dispatch(clearGraphs({ labFull: labData.full }))}
