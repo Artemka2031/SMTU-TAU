@@ -38,8 +38,8 @@ const App: React.FC = () => {
   return (
     <div className="grid-container">
       <Header />
-      <Sidebar activeLab={activeLab} setActiveLab={(lab) => dispatch(setActiveLab(lab))} />
-      {activeLab && <MainContent activeLab={activeLab} />}
+      <Sidebar />
+      {activeLab && <MainContent />}
     </div>
   );
 };
