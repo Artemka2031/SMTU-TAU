@@ -80,13 +80,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# База данных (тоже относительный путь)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Путь к базе данных с использованием Path
+        'NAME': BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -122,10 +120,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-# Static files configuration
-STATIC_URL = '/assets/'  # Match the prefix used in index.html
+# Статические файлы
+STATIC_URL = '/assets/'
 STATICFILES_DIRS = [
-    FRONTEND_DIST_DIR / 'assets',  # Point to dist/assets where the files are
+    BASE_DIR / "dist" / "assets",  # Относительный путь к dist/assets
 ]
 
 # Default primary key field type

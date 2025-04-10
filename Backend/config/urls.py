@@ -17,10 +17,8 @@ directions_router.register(r'labs', LabWorkViewSet, basename='direction-labs')
 urlpatterns = [
     path('api/', include(router.urls)),
     path('api/', include(directions_router.urls)),
-    # Serve index.html at the root URL
-    path('', serve, {'path': 'index.html', 'document_root': settings.BASE_DIR.parent / 'FrontEnd' / 'dist'}),
+    path('', serve, {'path': 'index.html', 'document_root': settings.BASE_DIR / "dist"}),
 ]
 
-# Serve static files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+# Статические файлы
+urlpatterns += static(settings.STATIC_URL, document_root=settings.BASE_DIR / "dist" / "assets")
