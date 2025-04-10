@@ -1,4 +1,4 @@
-# labs/directions/tau_lin/lab5.py
+# labs/directions/tau_lin/lab5_1.py
 
 import numpy as np
 from labs.base_lab import BaseLab
@@ -9,9 +9,9 @@ from labs.base_lab import BaseLab
 # Исследование разомкнутой системы
 # (рассчитываются только частотные характеристики)
 # ==============================
-class Lab5_TAU_Lin(BaseLab):
-    short = "5 ЛР"
-    full = "Исследование разомкнутой системы"
+class Lab5_1_TAU_Lin(BaseLab):
+    short = "5.1 ЛР"
+    full = "Исследование разомкнутой системы. Вариант 1"
     note = "Примечание для ЛР5 (Исследование разомкнутой системы)"
     active_graph = "АЧХ"
     default_params = {
@@ -41,10 +41,10 @@ class Lab5_TAU_Lin(BaseLab):
     @staticmethod
     def calculate_AFCH(K1, K2, K3, T1, T2, T3, count_of_dots, w_end):
         omega = np.logspace(np.log10(0.001), np.log10(w_end), count_of_dots)
-        Re = (K1 * K2 * K3) / ((1 + T1**2 * omega**2) *
+        Re = (K1 * K2 * K3) * (1 - omega**2 * T1 * T2 - omega**2 * T2 * T3 - omega**2 * T1 * T3) / ((1 + T1**2 * omega**2) *
                                 (1 + T2**2 * omega**2) *
                                 (1 + T3**2 * omega**2))
-        Im = -(K1 * K2 * K3 * omega * (T1 + T2 + T3)) / ((1 + T1**2 * omega**2) *
+        Im = (K1 * K2 * K3 * (omega**2 * T1 * T2 * T3 - omega * T1 - omega * T2 - omega * T3)) / ((1 + T1**2 * omega**2) *
                                                            (1 + T2**2 * omega**2) *
                                                            (1 + T3**2 * omega**2))
         return Re.tolist(), Im.tolist()

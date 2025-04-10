@@ -1,4 +1,4 @@
-# labs/directions/tau_lin/lab6.py
+# labs/directions/tau_lin/lab6_1.py
 
 import numpy as np
 from labs.base_lab import BaseLab
@@ -8,9 +8,9 @@ from labs.base_lab import BaseLab
 # Лабораторная работа 6:
 # Замкнутая система (с годографом Михайлова)
 # ==============================
-class Lab6_TAU_Lin(BaseLab):
-    short = "6 ЛР"
-    full = "Замкнутая система"
+class Lab6_1_TAU_Lin(BaseLab):
+    short = "6.1 ЛР"
+    full = "Замкнутая система. Вариант 1"
     note = "Примечание для ЛР6 (Замкнутая система с годографом Михайлова)"
     active_graph = "АЧХ"
     default_params = {
@@ -42,13 +42,13 @@ class Lab6_TAU_Lin(BaseLab):
 
     @staticmethod
     def calculate_ACH(K1, K2, K3, T1, T2, T3, count_of_dots, w_end):
-        omega, H = Lab6_TAU_Lin.calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end)
+        omega, H = Lab6_1_TAU_Lin.calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end)
         amplitude = [abs(h) for h in H]
         return omega, amplitude
 
     @staticmethod
     def calculate_AFCH(K1, K2, K3, T1, T2, T3, count_of_dots, w_end):
-        omega, H = Lab6_TAU_Lin.calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end)
+        omega, H = Lab6_1_TAU_Lin.calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end)
         Re = [np.real(h) for h in H]
         Im = [np.imag(h) for h in H]
         return omega, Re, Im

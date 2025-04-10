@@ -18,7 +18,7 @@ class Lab4_TAU_Lin(BaseLab):
         "Xm": "4.0",
         "T": "2.0",
         "xi": "0.5",
-        "t": "25"
+        "t": "35"
     }
     default_graphs = {
         "ПХ": ("Время", "Амплитуда", False),
@@ -48,7 +48,7 @@ class Lab4_TAU_Lin(BaseLab):
     @staticmethod
     def calculate_FCHH(T, xi, count_of_dots, w_end):
         omega = np.logspace(np.log10(0.001), np.log10(w_end), count_of_dots)
-        phase = -np.arctan((2 * xi * T * omega) / (1 - T**2 * omega**2))
+        phase = -np.arctan2((2 * xi * T * omega), (1 - T**2 * omega**2))
         return omega.tolist(), phase.tolist()
 
     @staticmethod
