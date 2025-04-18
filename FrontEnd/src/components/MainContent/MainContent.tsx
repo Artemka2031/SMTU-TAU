@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store";
 import Panel from "../Panel/Panel";
 import TipeLabButton from "./TipeLabButton";
-import { setActiveGraphForLab } from "../../store/slices/directionSlice";
+import { setActiveGraphForLab, updateGraphStorage, GraphData } from "../../store/slices/directionSlice"; // Импортируем GraphData
 import PlotlyGraph from "../PlotlyGraph";
 
 const MainContent: React.FC = () => {
@@ -12,9 +12,71 @@ const MainContent: React.FC = () => {
     (state: RootState) => state.direction
   );
 
-  // Находим текущее направление и лабораторную работу
   const currentDir = directions.find((dir) => dir.name === activeDirection);
   const labData = currentDir?.labs.find((l) => l.full === activeLab);
+
+  const hasFetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (!labData || !currentDir) return;
+
+    if (hasFetchedRef.current) {
+      console.log("Запрос уже выполнен, пропускаем...");
+      return;
+    }
+
+    const { id, parameters } = labData;
+    const directionId = currentDir.id;
+
+    const params = parameters.reduce((acc: { [key: string]: string }, param) => {
+      acc[param.name] = param.value;
+      return acc;
+    }, {});
+
+    console.log("Запрос к API для расчёта графика:", { directionId, labId: id, params });
+
+    hasFetchedRef.current = true;
+
+    fetch(`http://127.0.0.1:8000/api/directions/${directionId}/labs/${id}/calculate/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Данные от API для графика:", data);
+        const formattedData = Object.keys(data).reduce((acc: { [key: string]: GraphData[] }, graphName) => {
+          const graphData = data[graphName];
+          if (Array.isArray(graphData)) {
+            acc[graphName] = graphData.map((item: any, index: number) => ({
+              id: index + 1,
+              title: item.desc || `${graphName} #${index + 1}`,
+              x: item.x || [],
+              y: item.y || [],
+            }));
+          } else {
+            acc[graphName] = [];
+          }
+          return acc;
+        }, {});
+        dispatch(updateGraphStorage({ labFull: labData.full, graphData: formattedData }));
+      })
+      .catch((error) => {
+        console.error("Ошибка при запросе данных графика:", error);
+        hasFetchedRef.current = false;
+      });
+
+    return () => {
+      hasFetchedRef.current = false;
+    };
+  }, [labData?.id, currentDir?.id, dispatch]);
 
   if (!labData) {
     return (
@@ -30,29 +92,43 @@ const MainContent: React.FC = () => {
   }
 
   const { full, graphs, activeGraph, graphStorage, graphAxes } = labData;
-  // Настройки осей
+
+  console.log("MainContent: graphAxes:", graphAxes);
+
   const axisSettings = graphAxes?.[activeGraph] || {
     xLabel: "X",
     yLabel: "Y",
-    logX: false
+    logX: false,
   };
+
+  const lafchAxisSettings = {
+    amplitude: graphAxes?.["ЛАФЧХ (амплитуда)"] || {
+      xLabel: "Частота, рад/с",
+      yLabel: "дБ",
+      logX: true,
+    },
+    phase: graphAxes?.["ЛАФЧХ (фаза)"] || {
+      xLabel: "Частота, рад/с",
+      yLabel: "°",
+      logX: true,
+    },
+  };
+
+  console.log("MainContent: axisSettings:", axisSettings);
+  console.log("MainContent: lafchAxisSettings:", lafchAxisSettings);
 
   const handleSelectGraph = (graphName: string) => {
     dispatch(setActiveGraphForLab({ labFull: full, graph: graphName }));
   };
 
-  // Сформируем список кнопок: если есть "ЛАФЧХ (амплитуда)" и "ЛАФЧХ (фаза)",
-  // то объединим их в одну кнопку "ЛАФЧХ".
   let displayGraphs: string[] = [];
   if (
     graphs.includes("ЛАФЧХ (амплитуда)") &&
     graphs.includes("ЛАФЧХ (фаза)")
   ) {
-    // убираем "ЛАФЧХ (амплитуда)" и "ЛАФЧХ (фаза)"
     displayGraphs = graphs.filter(
       (g) => g !== "ЛАФЧХ (амплитуда)" && g !== "ЛАФЧХ (фаза)"
     );
-    // добавляем общую "ЛАФЧХ"
     if (!displayGraphs.includes("ЛАФЧХ")) {
       displayGraphs.push("ЛАФЧХ");
     }
@@ -60,15 +136,24 @@ const MainContent: React.FC = () => {
     displayGraphs = graphs;
   }
 
-  // Определяем, надо ли рисовать "ЛАФЧХ".
-  const isCombinedLAFCH = (activeGraph === "ЛАФЧХ");
+  const isCombinedLAFCH = activeGraph === "ЛАФЧХ";
 
-  // Если это "ЛАФЧХ", берём данные из graphStorage["ЛАФЧХ (амплитуда)"] и ["ЛАФЧХ (фаза)"]
-  const lafchAmplitude = graphStorage["ЛАФЧХ (амплитуда)"] || [];
-  const lafchPhase = graphStorage["ЛАФЧХ (фаза)"] || [];
+  const lafchAmplitude = Array.isArray(graphStorage["ЛАФЧХ (амплитуда)"])
+    ? graphStorage["ЛАФЧХ (амплитуда)"]
+    : [];
+  const lafchPhase = Array.isArray(graphStorage["ЛАФЧХ (фаза)"])
+    ? graphStorage["ЛАФЧХ (фаза)"]
+    : [];
+  const currentSeries = Array.isArray(graphStorage[activeGraph])
+    ? graphStorage[activeGraph]
+    : [];
 
-  // Если граф не "ЛАФЧХ", просто берём currentSeries
-  const currentSeries = graphStorage[activeGraph] || [];
+  console.log("MainContent: данные для графика:", {
+    activeGraph,
+    currentSeries,
+    lafchAmplitude,
+    lafchPhase,
+  });
 
   return (
     <div className="main">
@@ -92,9 +177,9 @@ const MainContent: React.FC = () => {
             graphName={activeGraph}
             axisSettings={axisSettings}
             dataSeries={currentSeries}
-            // Если "ЛАФЧХ" – передаем амплитуду/фазу. Иначе нет.
             lafchAmplitude={isCombinedLAFCH ? lafchAmplitude : undefined}
             lafchPhase={isCombinedLAFCH ? lafchPhase : undefined}
+            lafchAxisSettings={isCombinedLAFCH ? lafchAxisSettings : undefined}
           />
         </div>
       </div>

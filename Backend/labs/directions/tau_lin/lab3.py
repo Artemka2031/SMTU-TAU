@@ -9,7 +9,7 @@ from labs.base_lab import BaseLab
 # Аперодическое звено второго порядка
 # ==============================
 class Lab3_TAU_Lin(BaseLab):
-    short = "3 ЛР"
+    short = "3"
     full = "Аперодическое звено II порядка"
     note = "Примечание для ЛР3 (Аперодическое звено II порядка)"
     active_graph = "ПХ"

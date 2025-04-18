@@ -9,7 +9,7 @@ from labs.base_lab import BaseLab
 # Колебательное звено
 # ==============================
 class Lab4_TAU_Lin(BaseLab):
-    short = "4 ЛР"
+    short = "4"
     full = "Колебательное звено"
     note = "Примечание для ЛР4 (Колебательное звено)"
     active_graph = "ПХ"

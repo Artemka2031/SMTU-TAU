@@ -36,8 +36,8 @@ export interface LabDefinition {
   full: string;
   note: string;
   parameters: ParamItem[];
-  graphs: string[];                        // ["ПХ", "АЧХ", ..., "ЛАФЧХ" (при объединении)]
-  activeGraph: string;                     // "ПХ" / "АЧХ" / "ЛАФЧХ" ...
+  graphs: string[];
+  activeGraph: string;
   graphStorage: { [graphName: string]: GraphData[] };
   graphAxes?: { [graphName: string]: AxisSettings };
 }
@@ -219,24 +219,25 @@ export const directionSlice = createSlice({
       }
     },
 
-    /**
-     * Обработка данных с API. Здесь мы "объединяем" ЛАФЧХ (амплитуда) и (фаза) в один пункт "ЛАФЧХ".
-     */
     setDirectionsFromAPI(state, action: PayloadAction<APIDirection[]>) {
       const apiDirections = action.payload;
+      // Сохраняем существующие graphStorage перед перезаписью
+      const existingGraphStorage: { [labFull: string]: { [graphName: string]: GraphData[] } } = {};
+      state.directions.forEach((dir) => {
+        dir.labs.forEach((lab) => {
+          existingGraphStorage[lab.full] = { ...lab.graphStorage };
+        });
+      });
+
       state.directions = apiDirections.map((apiDir) => {
         return {
           id: apiDir.id,
           name: apiDir.name,
           labs: apiDir.labs.map((apiLab) => {
-            // 1) Формируем массив названий графиков
             let graphNames = apiLab.graphs.map((g) => g.name);
-
-            // Проверяем, есть ли в списке "ЛАФЧХ (амплитуда)" и "ЛАФЧХ (фаза)"
             const hasAmp = graphNames.includes("ЛАФЧХ (амплитуда)");
             const hasPhase = graphNames.includes("ЛАФЧХ (фаза)");
 
-            // Если да, то убираем их и добавляем "ЛАФЧХ"
             if (hasAmp && hasPhase) {
               graphNames = graphNames.filter(
                 (n) => n !== "ЛАФЧХ (амплитуда)" && n !== "ЛАФЧХ (фаза)"
@@ -246,8 +247,6 @@ export const directionSlice = createSlice({
               }
             }
 
-            // Проверяем active_graph: если он "ЛАФЧХ (амплитуда)" или "(фаза)",
-            // то ставим "ЛАФЧХ"
             let activeGraph = apiLab.active_graph;
             if (
               ["ЛАФЧХ (амплитуда)", "ЛАФЧХ (фаза)"].includes(activeGraph) &&
@@ -256,21 +255,13 @@ export const directionSlice = createSlice({
               activeGraph = "ЛАФЧХ";
             }
 
-            // 2) Инициализируем graphStorage ВСЕГДА под все оригинальные ключи,
-            //    чтобы у нас были "ЛАФЧХ (амплитуда)" и "ЛАФЧХ (фаза)" тоже
-            //    (когда сервер вернёт данные)
             const storageEntries = apiLab.graphs.map((g) => [g.name, []]);
-
-            // 3) Плюс, если мы добавили "ЛАФЧХ" как объединение,
-            //    то тоже инициализируем под ключ "ЛАФЧХ" (на всякий случай).
             if (hasAmp && hasPhase) {
               storageEntries.push(["ЛАФЧХ", []]);
             }
 
-            // Формируем объект для graphStorage
             const graphStorageObj = Object.fromEntries(storageEntries);
 
-            // Аналогично формируем graphAxes
             const graphAxesObj = Object.fromEntries(
               apiLab.graphs.map((g) => [
                 g.name,
@@ -281,7 +272,6 @@ export const directionSlice = createSlice({
                 },
               ])
             );
-            // Для "ЛАФЧХ" как объединённого графика при желании можно задать особые оси
             if (hasAmp && hasPhase) {
               graphAxesObj["ЛАФЧХ"] = {
                 xLabel: "ω, рад/с",
@@ -290,23 +280,24 @@ export const directionSlice = createSlice({
               };
             }
 
-            // Собираем результат
+            // Восстанавливаем graphStorage, если он уже был
+            const restoredGraphStorage = existingGraphStorage[apiLab.full] || graphStorageObj;
+
             return {
               id: apiLab.id,
               short: apiLab.short,
               full: apiLab.full,
               note: apiLab.note,
               parameters: apiLab.parameters,
-              graphs: graphNames,        // уже отредактированный список
-              activeGraph,               // заменён, если нужно
-              graphStorage: graphStorageObj,
+              graphs: graphNames,
+              activeGraph,
+              graphStorage: restoredGraphStorage,
               graphAxes: graphAxesObj,
             };
           }),
         };
       });
 
-      // Устанавливаем activeDirection, activeLab по умолчанию
       if (state.directions.length > 0) {
         state.activeDirection = state.directions[0].name;
         if (state.directions[0].labs.length > 0) {
@@ -315,6 +306,7 @@ export const directionSlice = createSlice({
           state.activeLab = null;
         }
       }
+      console.log("setDirectionsFromAPI: directions после обновления:", state.directions);
     },
 
     addGraph(state, action: PayloadAction<{ labFull: string }>) {
@@ -334,6 +326,25 @@ export const directionSlice = createSlice({
             y: [],
           });
           return;
+        }
+      }
+    },
+
+    updateGraphStorage(
+      state,
+      action: PayloadAction<{ labFull: string; graphData: { [graphName: string]: GraphData[] } }>
+    ) {
+      const { labFull, graphData } = action.payload;
+      for (const dir of state.directions) {
+        const lab = dir.labs.find((l) => l.full === labFull);
+        if (lab) {
+          const formattedGraphData = Object.keys(graphData).reduce((acc: { [key: string]: GraphData[] }, graphName) => {
+            acc[graphName] = Array.isArray(graphData[graphName]) ? graphData[graphName] : [];
+            return acc;
+          }, {});
+          lab.graphStorage = { ...lab.graphStorage, ...formattedGraphData };
+          console.log(`updateGraphStorage: Обновлён graphStorage для ${labFull}:`, lab.graphStorage);
+          break;
         }
       }
     },
@@ -359,6 +370,7 @@ export const directionSlice = createSlice({
           y,
         });
       }
+      console.log(`calculateLab.fulfilled: Обновлён graphStorage для lab ${labId}:`, lab?.graphStorage);
     });
 
     builder.addCase(calculateLab.rejected, (_state, action) => {
@@ -376,6 +388,7 @@ export const {
   updateNote,
   setDirectionsFromAPI,
   addGraph,
+  updateGraphStorage,
 } = directionSlice.actions;
 
 export default directionSlice.reducer;

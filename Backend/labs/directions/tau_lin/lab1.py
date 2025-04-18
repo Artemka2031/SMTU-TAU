@@ -9,7 +9,7 @@ from labs.base_lab import BaseLab
 # Дифференцирующее звено с замедлением
 # ==============================
 class Lab1_TAU_Lin(BaseLab):
-    short = "1 ЛР"
+    short = "1"
     full = "1 ЛР: Линейные системы"
     note = "Примечание для 1 ЛР (Лин)"
     active_graph = "ПХ"
