@@ -1,3 +1,5 @@
+import math
+
 from labs.base_lab import BaseLab
 
 
@@ -5,7 +7,7 @@ class Lab1_TAU_NoLin(BaseLab):
     short = "1"
     full = "1 ЛР: Нелинейные системы"
     note = "Лабораторная работа по нелинейным системам"
-    active_graph = "Тест"
+    active_graph = "Тест1"
     default_params = {
         "K": "3.0",
         "Xm": "4.0",
@@ -13,7 +15,8 @@ class Lab1_TAU_NoLin(BaseLab):
         "t": "25",
     }
     default_graphs = {
-        f"Тест_НЛ{i}": ("Время", "Амплитуда", False) for i in range(1, 9)
+        "Тест1": ("Время", "Амплитуда", False),
+        "Тест2": ("Время", "Амплитуда", False),
     }
     expected_params = ["K", "Xm", "T", "t"]
     nonlinearities = {
@@ -44,12 +47,21 @@ class Lab1_TAU_NoLin(BaseLab):
         t = [i * t_max / count_of_dots for i in range(count_of_dots)]
 
         result = {}
+        # Тест1: линейная зависимость
         for nl_name, nl_func in cls.nonlinearities.items():
             y = [nl_func(Xm * K * (1 - (i / T))) for i in t]
-            result[f"Тест_{nl_name}"] = {
+            result[f"Тест1_{nl_name}"] = {
                 "x": t,
                 "y": y,
-                "desc": f"График для нелинейности {nl_name}",
+                "desc": f"График для нелинейности {nl_name} (Тест1)",
+            }
+        # Тест2: синусоидальная зависимость
+        for nl_name, nl_func in cls.nonlinearities.items():
+            y = [nl_func(Xm * K * math.sin(i / T)) for i in t]
+            result[f"Тест2_{nl_name}"] = {
+                "x": t,
+                "y": y,
+                "desc": f"График для нелинейности {nl_name} (Тест2)",
             }
 
         return result

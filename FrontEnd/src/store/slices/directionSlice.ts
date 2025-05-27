@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 export interface ParamItem {
     name: string;
@@ -237,7 +237,7 @@ export const directionSlice = createSlice({
                     }
 
                     if (apiDir.name === "ТАУ Нелин") {
-                        graphNames = ["Тест"];
+                        graphNames = ["Тест1", "Тест2"];
                     }
 
                     let activeGraph = apiLab.active_graph;
@@ -248,7 +248,7 @@ export const directionSlice = createSlice({
                     ) {
                         activeGraph = "ЛАФЧХ";
                     } else if (apiDir.name === "ТАУ Нелин") {
-                        activeGraph = "Тест";
+                        activeGraph = "Тест1";
                     }
 
                     const storageEntries = graphNames.map((g: string) => [g, []]);
@@ -256,7 +256,12 @@ export const directionSlice = createSlice({
 
                     const graphAxesObj: { [key: string]: AxisSettings } = {};
                     if (apiDir.name === "ТАУ Нелин") {
-                        graphAxesObj["Тест"] = {
+                        graphAxesObj["Тест1"] = {
+                            xLabel: "Время",
+                            yLabel: "Амплитуда",
+                            logX: false,
+                        };
+                        graphAxesObj["Тест2"] = {
                             xLabel: "Время",
                             yLabel: "Амплитуда",
                             logX: false,
@@ -313,8 +318,11 @@ export const directionSlice = createSlice({
             for (const dir of state.directions) {
                 const lab = dir.labs.find((l) => l.full === labFull);
                 if (lab) {
-                    if (!lab.graphStorage["Тест"]) {
-                        lab.graphStorage["Тест"] = [];
+                    if (!lab.graphStorage["Тест1"]) {
+                        lab.graphStorage["Тест1"] = [];
+                    }
+                    if (!lab.graphStorage["Тест2"]) {
+                        lab.graphStorage["Тест2"] = [];
                     }
                     break;
                 }
@@ -356,27 +364,29 @@ export const directionSlice = createSlice({
             }
 
             if (dir.name === "ТАУ Нелин") {
-                if (!lab.graphStorage["Тест"]) {
-                    lab.graphStorage["Тест"] = [];
-                }
                 const nl = lab.selectedNonlinearity;
-                const nlKey = `Тест_${nl}`;
-                if (nl && data[nlKey]) {
-                    const {x, y, desc} = data[nlKey];
-                    if (Array.isArray(x) && Array.isArray(y)) {
-                        lab.graphStorage["Тест"].push({
-                            id: lab.graphStorage["Тест"].length + 1,
-                            title: desc || `График для ${nl}`,
-                            x,
-                            y,
-                        });
-                        console.log(`Добавлен нелинейный график для ${nl}:`, {x, y, desc});
-                    } else {
-                        console.warn(`Некорректные данные x или y для нелинейности ${nl}:`, {x, y});
+                ["Тест1", "Тест2"].forEach((graphName) => {
+                    if (!lab.graphStorage[graphName]) {
+                        lab.graphStorage[graphName] = [];
                     }
-                } else {
-                    console.warn(`Данные для нелинейности ${nl} отсутствуют в ответе:`, data);
-                }
+                    const nlKey = `${graphName}_${nl}`;
+                    if (nl && data[nlKey]) {
+                        const {x, y, desc} = data[nlKey];
+                        if (Array.isArray(x) && Array.isArray(y)) {
+                            lab.graphStorage[graphName].push({
+                                id: lab.graphStorage[graphName].length + 1,
+                                title: desc || `График для ${nl} (${graphName})`,
+                                x,
+                                y,
+                            });
+                            console.log(`Добавлен нелинейный график для ${nlKey}:`, {x, y, desc});
+                        } else {
+                            console.warn(`Некорректные данные x или y для ${nlKey}:`, {x, y});
+                        }
+                    } else {
+                        console.warn(`Данные для ${nlKey} отсутствуют в ответе:`, data);
+                    }
+                });
             } else {
                 for (const graphName in data) {
                     if (!lab.graphStorage[graphName]) {

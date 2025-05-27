@@ -3,11 +3,11 @@ import {AppDispatch, RootState} from "../../store";
 import {useDispatch, useSelector} from "react-redux";
 import {
     addGraph,
+    calculateLab,
+    clearGraphs,
+    setNonlinearity,
     updateLabParameter,
     updateNote,
-    clearGraphs,
-    calculateLab,
-    setNonlinearity,
 } from "../../store/slices/directionSlice";
 import ParameterInput from "./ParameterInput";
 import NoteInput from "./NoteInput";
@@ -139,4 +139,5 @@ const Panel: React.FC = () => {
     );
 };
 
+// @ts-ignore
 export default Panel;
