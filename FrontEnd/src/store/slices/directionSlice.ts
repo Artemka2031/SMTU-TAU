@@ -236,10 +236,6 @@ export const directionSlice = createSlice({
                         }
                     }
 
-                    if (apiDir.name === "ТАУ Нелин") {
-                        graphNames = ["Тест1", "Тест2"];
-                    }
-
                     let activeGraph = apiLab.active_graph;
                     if (
                         ["ЛАФЧХ (амплитуда)", "ЛАФЧХ (фаза)"].includes(activeGraph) &&
@@ -247,40 +243,27 @@ export const directionSlice = createSlice({
                         hasPhase
                     ) {
                         activeGraph = "ЛАФЧХ";
-                    } else if (apiDir.name === "ТАУ Нелин") {
-                        activeGraph = "Тест1";
+                    } else if (!graphNames.includes(activeGraph)) {
+                        activeGraph = graphNames[0] || "";
                     }
 
                     const storageEntries = graphNames.map((g: string) => [g, []]);
                     const graphStorageObj = Object.fromEntries(storageEntries);
 
                     const graphAxesObj: { [key: string]: AxisSettings } = {};
-                    if (apiDir.name === "ТАУ Нелин") {
-                        graphAxesObj["Тест1"] = {
-                            xLabel: "Время",
-                            yLabel: "Амплитуда",
-                            logX: false,
+                    apiLab.graphs.forEach((g: APIGraph) => {
+                        graphAxesObj[g.name] = {
+                            xLabel: g.x_label,
+                            yLabel: g.y_label,
+                            logX: g.log_x,
                         };
-                        graphAxesObj["Тест2"] = {
-                            xLabel: "Время",
-                            yLabel: "Амплитуда",
-                            logX: false,
+                    });
+                    if (hasAmp && hasPhase) {
+                        graphAxesObj["ЛАФЧХ"] = {
+                            xLabel: "ω, рад/с",
+                            yLabel: "ДБ + Фаза",
+                            logX: true,
                         };
-                    } else {
-                        apiLab.graphs.forEach((g: APIGraph) => {
-                            graphAxesObj[g.name] = {
-                                xLabel: g.x_label,
-                                yLabel: g.y_label,
-                                logX: g.log_x,
-                            };
-                        });
-                        if (hasAmp && hasPhase) {
-                            graphAxesObj["ЛАФЧХ"] = {
-                                xLabel: "ω, рад/с",
-                                yLabel: "ДБ + Фаза",
-                                logX: true,
-                            };
-                        }
                     }
 
                     const restoredGraphStorage = existingGraphStorage[apiLab.full] || graphStorageObj;
@@ -318,12 +301,11 @@ export const directionSlice = createSlice({
             for (const dir of state.directions) {
                 const lab = dir.labs.find((l) => l.full === labFull);
                 if (lab) {
-                    if (!lab.graphStorage["Тест1"]) {
-                        lab.graphStorage["Тест1"] = [];
-                    }
-                    if (!lab.graphStorage["Тест2"]) {
-                        lab.graphStorage["Тест2"] = [];
-                    }
+                    lab.graphs.forEach((graphName) => {
+                        if (!lab.graphStorage[graphName]) {
+                            lab.graphStorage[graphName] = [];
+                        }
+                    });
                     break;
                 }
             }
@@ -365,7 +347,7 @@ export const directionSlice = createSlice({
 
             if (dir.name === "ТАУ Нелин") {
                 const nl = lab.selectedNonlinearity;
-                ["Тест1", "Тест2"].forEach((graphName) => {
+                lab.graphs.forEach((graphName) => {
                     if (!lab.graphStorage[graphName]) {
                         lab.graphStorage[graphName] = [];
                     }
