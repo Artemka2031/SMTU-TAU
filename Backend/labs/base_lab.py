@@ -1,22 +1,24 @@
-# labs/base_lab.py
-
 from abc import ABC, abstractmethod
+from typing import Dict, Optional
 
 
 class BaseLab(ABC):
     short: str = ""
     full: str = ""
     note: str = ""
-    default_params: dict = {}
-    default_graphs: dict = {}
+    default_params: Dict[str, str] = {}
+    default_graphs: Dict[str, tuple] = {}
     active_graph: str = ""
-    # Список параметров, обязательных для расчёта.
     expected_params: list = []
+    nonlinearities: Dict[str, callable] = {}  # Only for nonlinear labs
 
     @classmethod
     @abstractmethod
-    def calculate_all_functions(cls, params: dict, graph_params: dict) -> dict:
+    def calculate_all_functions(cls, params: Dict[str, str], graph_params: Dict[str, float],
+                                nonlinearity: Optional[str] = None) -> Dict:
         """
-        Метод должен вернуть словарь с данными для каждого графика.
+        Returns a dictionary with data for each graph.
+        For nonlinear labs, 'nonlinearity' specifies the nonlinearity to apply.
+        graph_params includes 'w_end' and 'count_of_points' for frequency-based graphs.
         """
         pass

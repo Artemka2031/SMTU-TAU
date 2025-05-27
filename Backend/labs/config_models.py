@@ -10,7 +10,9 @@ class LabConfig(BaseModel):
     default_graphs: Dict[str, Tuple[str, str, bool]] = Field(
         ..., description="Словарь графиков. Ключ — название графика, значение — кортеж (x_label, y_label, log_x)"
     )
-    calc_function: str = Field(..., description="Полностью квалифицированное имя функции calculate_all_functions")
+    calc_module: str = Field(...,
+                             description="Полностью квалифицированное имя модуля и класса, например 'labs.directions.tau_nolin.lab1.Lab1_TAU_NoLin'")
+    active_graph: str = Field(..., description="Активный график по умолчанию")
 
     @field_validator('short', 'full', 'note')
     def non_empty(cls, v):

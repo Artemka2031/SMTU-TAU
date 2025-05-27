@@ -21,7 +21,8 @@ for lab_cls in LABS:
             note=lab_cls.note,
             default_params=lab_cls.default_params,
             default_graphs=lab_cls.default_graphs,
-            calc_function=f"{lab_cls.__module__}.{lab_cls.__name__}.calculate_all_functions"
+            calc_module=f"{lab_cls.__module__}.{lab_cls.__name__}",  # e.g., labs.directions.tau_lin.lab1.Lab1_TAU_Lin
+            active_graph=lab_cls.active_graph,
         )
         labs_config.append(config)
     except Exception as e:

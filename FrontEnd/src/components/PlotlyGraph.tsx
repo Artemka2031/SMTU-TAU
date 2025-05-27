@@ -54,11 +54,11 @@ const PlotlyGraph: React.FC<PlotlyGraphProps> = React.memo(
     }
 
     if (graphName !== "ЛАФЧХ") {
-      const traces = dataSeries.map((series) => ({
+      const traces = dataSeries.map((series, idx) => ({
         x: series.x,
         y: series.y,
         mode: "lines",
-        name: series.title,
+        name: series.title || `График #${idx + 1}`,
         line: { width: 4 },
       }));
 
@@ -86,27 +86,6 @@ const PlotlyGraph: React.FC<PlotlyGraphProps> = React.memo(
         },
         autosize: true,
         margin: { l: 60, r: 60, t: 60, b: 60 },
-        annotations: [
-          {
-            xref: "paper",
-            yref: "paper",
-            x: 0.5,
-            y: -0.15,
-            showarrow: false,
-            text: axisSettings.xLabel,
-            font: { size: 16 },
-          },
-          {
-            xref: "paper",
-            yref: "paper",
-            x: -0.1,
-            y: 0.5,
-            showarrow: false,
-            text: axisSettings.yLabel,
-            font: { size: 16 },
-            textangle: -90,
-          },
-        ],
       };
 
       return (
@@ -174,28 +153,6 @@ const PlotlyGraph: React.FC<PlotlyGraphProps> = React.memo(
       legend: { orientation: "h", x: 0, y: -0.2 },
       autosize: true,
       margin: { l: 60, r: 60, t: 60, b: 60 },
-      annotations: [
-        {
-          xref: "paper",
-          yref: "paper",
-          x: -0.1,
-          y: 0.5,
-          showarrow: false,
-          text: lafchAxisSettings?.amplitude.yLabel || "дБ",
-          font: { size: 16 },
-          textangle: -90,
-        },
-        {
-          xref: "paper",
-          yref: "paper",
-          x: 1.1,
-          y: 0.5,
-          showarrow: false,
-          text: lafchAxisSettings?.phase.yLabel || "°",
-          font: { size: 16 },
-          textangle: 90,
-        },
-      ],
     };
 
     return (

@@ -61,7 +61,7 @@ class Lab5_1_TAU_Lin(BaseLab):
         return omega.tolist(), magnitude.tolist(), phase.tolist()
 
     @classmethod
-    def calculate_all_functions(cls, params: dict, graph_params: dict) -> dict:
+    def calculate_all_functions(cls, params: dict, graph_params: dict, nonlinearity: str = None) -> dict:
         missing = [key for key in cls.expected_params if key not in params]
         if missing:
             raise ValueError(f"Отсутствуют параметры: {missing}")

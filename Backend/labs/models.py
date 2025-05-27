@@ -1,11 +1,9 @@
 from django.db import models
+import importlib
 
 
 class Direction(models.Model):
-    """
-    Направление: "ОА", "ТАУ Лин", "ТАУ Нелин", "ТДЗ"
-    """
-    name = models.CharField(max_length=100, unique=True)  # "ТАУ Нелин"
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -13,37 +11,39 @@ class Direction(models.Model):
 
 
 class LabWork(models.Model):
-    """
-    Лабораторная работа:
-    - Краткое название (short), например "1 ЛР"
-    - Полное название (full)
-    - Примечание (note)
-    - Активный график (active_graph)
-    - Ссылка на направление (direction)
-    - calc_module: имя Python-модуля (или класса), который умеет рассчитывать графики
-    """
     direction = models.ForeignKey(Direction, on_delete=models.CASCADE, related_name='labs')
     short = models.CharField(max_length=100)
     full = models.CharField(max_length=255)
     note = models.TextField(blank=True, null=True)
     active_graph = models.CharField(max_length=100, default="ПХ")
-
-    # Доп. поле — имя модуля/класса для расчетов
     calc_module = models.CharField(
         max_length=255,
         blank=True,
         null=True,
-        help_text="Имя Python-модуля для расчётов, например 'labs.calculations.lab1'."
+        help_text="Имя Python-модуля для расчётов, например 'labs.directions.tau_nolin.lab1.Lab1_TAU_NoLin'."
     )
 
     def __str__(self):
         return f"{self.direction.name} - {self.short}"
 
+    def get_nonlinearities(self):
+        """
+        Returns the list of available nonlinearities for the lab.
+        Only applies to labs in the 'ТАУ Нелин' direction.
+        """
+        if self.direction.name != "ТАУ Нелин" or not self.calc_module:
+            return []
+        try:
+            module_path, class_name = self.calc_module.rsplit(".", 1)
+            module = importlib.import_module(module_path)
+            lab_class = getattr(module, class_name)
+            return list(getattr(lab_class, "nonlinearities", {}).keys())
+        except (ImportError, AttributeError) as e:
+            print(f"Ошибка получения нелинейностей для {self.calc_module}: {e}")
+            return []
+
 
 class LabParameter(models.Model):
-    """
-    Параметр лабораторной: name="K", value="3.0" и т.д.
-    """
     lab = models.ForeignKey(LabWork, on_delete=models.CASCADE, related_name='parameters')
     name = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
@@ -53,14 +53,8 @@ class LabParameter(models.Model):
 
 
 class GraphType(models.Model):
-    """
-    Тип (вид) графика + настройки осей:
-      - name: "ПХ", "АЧХ", "ФЧХ", ...
-      - x_label, y_label: подписи осей
-      - log_x: включён ли логарифм
-    """
     lab = models.ForeignKey(LabWork, on_delete=models.CASCADE, related_name='graphs')
-    name = models.CharField(max_length=100)  # "ПХ", "АЧХ" и т.д.
+    name = models.CharField(max_length=100)
     x_label = models.CharField(max_length=100, default="X")
     y_label = models.CharField(max_length=100, default="Y")
     log_x = models.BooleanField(default=False)

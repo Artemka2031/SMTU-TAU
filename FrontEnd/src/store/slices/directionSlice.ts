@@ -1,394 +1,422 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 
-/**
- * Параметр: name ("K", "t", ...) и value ("3.0", "25", ...).
- */
 export interface ParamItem {
-  name: string;
-  value: string;
+    name: string;
+    value: string;
 }
 
-/**
- * Набор данных (серия) для графика
- */
 export interface GraphData {
-  id: number;
-  title: string;
-  x: number[];
-  y: number[];
+    id: number;
+    title: string;
+    x: number[];
+    y: number[];
 }
 
-/**
- * Настройки осей: подписи и логарифм.
- */
 export interface AxisSettings {
-  xLabel: string;
-  yLabel: string;
-  logX: boolean;
+    xLabel: string;
+    yLabel: string;
+    logX: boolean;
 }
 
-/**
- * Лабораторная работа в Redux
- */
 export interface LabDefinition {
-  id: number;
-  short: string;
-  full: string;
-  note: string;
-  parameters: ParamItem[];
-  graphs: string[];
-  activeGraph: string;
-  graphStorage: { [graphName: string]: GraphData[] };
-  graphAxes?: { [graphName: string]: AxisSettings };
+    id: number;
+    short: string;
+    full: string;
+    note: string;
+    parameters: ParamItem[];
+    graphs: string[];
+    activeGraph: string;
+    graphStorage: { [graphName: string]: GraphData[] };
+    graphAxes?: { [graphName: string]: AxisSettings };
+    nonlinearities?: string[];
+    selectedNonlinearity?: string;
 }
 
 export interface DirectionItem {
-  id: number;
-  name: string;
-  labs: LabDefinition[];
+    id: number;
+    name: string;
+    labs: LabDefinition[];
 }
 
 export interface DirectionState {
-  activeDirection: string;
-  activeLab: string | null;
-  directions: DirectionItem[];
+    activeDirection: string;
+    activeLab: string | null;
+    directions: DirectionItem[];
 }
 
-// Типы с API
 interface APIGraph {
-  name: string;
-  x_label: string;
-  y_label: string;
-  log_x: boolean;
+    name: string;
+    x_label: string;
+    y_label: string;
+    log_x: boolean;
 }
 
 interface APILab {
-  id: number;
-  short: string;
-  full: string;
-  note: string;
-  active_graph: string;
-  parameters: ParamItem[];
-  graphs: APIGraph[];
+    id: number;
+    short: string;
+    full: string;
+    note: string;
+    active_graph: string;
+    parameters: ParamItem[];
+    graphs: APIGraph[];
+    nonlinearities: string[];
 }
 
 interface APIDirection {
-  id: number;
-  name: string;
-  description: string;
-  labs: APILab[];
+    id: number;
+    name: string;
+    description: string;
+    labs: APILab[];
 }
 
-// ----------------------
-// calculateLab thunk
-// ----------------------
-
 interface CalcResponse {
-  [graphName: string]: {
-    x: number[];
-    y: number[];
-    desc?: string;
-  };
+    [graphName: string]: {
+        x: number[];
+        y: number[];
+        desc?: string;
+    };
 }
 
 interface CalculateLabArgs {
-  directionId: number;
-  labId: number;
-  bodyParams: Record<string, string>;
+    directionId: number;
+    labId: number;
+    bodyParams: Record<string, string>;
+    nonlinearity?: string;
 }
 
 export const calculateLab = createAsyncThunk<
-  { directionId: number; labId: number; data: CalcResponse },
-  CalculateLabArgs,
-  { rejectValue: string }
+    { directionId: number; labId: number; data: CalcResponse },
+    CalculateLabArgs,
+    { rejectValue: string }
 >(
-  "direction/calculateLab",
-  async ({ directionId, labId, bodyParams }, { rejectWithValue }) => {
-    try {
-      const url = `http://127.0.0.1:8000/api/directions/${directionId}/labs/${labId}/calculate/`;
-      console.log("Отправка запроса:", url, bodyParams);
+    "direction/calculateLab",
+    async ({directionId, labId, bodyParams, nonlinearity}, {rejectWithValue}) => {
+        try {
+            const url = `http://127.0.0.1:8000/api/directions/${directionId}/labs/${labId}/calculate/`;
+            const requestBody = {...bodyParams};
+            if (nonlinearity && directionId === 2) {
+                requestBody.nonlinearity = nonlinearity;
+            }
+            console.log("Отправка запроса calculateLab:", url, requestBody);
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bodyParams),
-      });
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(requestBody),
+            });
 
-      if (!response.ok) {
-        console.error("HTTP Error:", response.status);
-        return rejectWithValue(`HTTP error: ${response.status}`);
-      }
+            if (!response.ok) {
+                console.error("HTTP ошибка:", response.status);
+                return rejectWithValue(`HTTP ошибка: ${response.status}`);
+            }
 
-      const data: CalcResponse = await response.json();
-      console.log("Полученные данные:", data);
+            const data: CalcResponse = await response.json();
+            console.log("Полученные данные calculateLab:", data);
 
-      return { directionId, labId, data };
-    } catch (error) {
-      console.error("Ошибка запроса:", error);
-      return rejectWithValue(String(error));
+            return {directionId, labId, data};
+        } catch (error) {
+            console.error("Ошибка запроса calculateLab:", error);
+            return rejectWithValue(String(error));
+        }
     }
-  }
 );
 
-// ----------------------
-// Начальное состояние
-// ----------------------
 const initialState: DirectionState = {
-  activeDirection: "",
-  activeLab: null,
-  directions: [],
+    activeDirection: "",
+    activeLab: null,
+    directions: [],
 };
 
-// ----------------------
-// directionSlice
-// ----------------------
-
 export const directionSlice = createSlice({
-  name: "direction",
-  initialState,
-  reducers: {
-    setActiveDirection(state, action: PayloadAction<string>) {
-      state.activeDirection = action.payload;
-      state.activeLab = null;
-    },
+    name: "direction",
+    initialState,
+    reducers: {
+        setActiveDirection(state, action: PayloadAction<string>) {
+            console.log("setActiveDirection:", action.payload);
+            state.activeDirection = action.payload;
+            state.activeLab = null;
+        },
 
-    setActiveLab(state, action: PayloadAction<string | null>) {
-      state.activeLab = action.payload;
-    },
+        setActiveLab(state, action: PayloadAction<string | null>) {
+            console.log("setActiveLab:", action.payload);
+            state.activeLab = action.payload;
+        },
 
-    setActiveGraphForLab(
-      state,
-      action: PayloadAction<{ labFull: string; graph: string }>
-    ) {
-      const { labFull, graph } = action.payload;
-      for (const dir of state.directions) {
-        const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab && lab.graphs.includes(graph)) {
-          lab.activeGraph = graph;
-          break;
-        }
-      }
-    },
+        setActiveGraphForLab(
+            state,
+            action: PayloadAction<{ labFull: string; graph: string }>
+        ) {
+            const {labFull, graph} = action.payload;
+            console.log("setActiveGraphForLab:", {labFull, graph});
+            for (const dir of state.directions) {
+                const lab = dir.labs.find((l) => l.full === labFull);
+                if (lab && lab.graphs.includes(graph)) {
+                    lab.activeGraph = graph;
+                    break;
+                }
+            }
+        },
 
-    updateLabParameter(
-      state,
-      action: PayloadAction<{ labFull: string; paramName: string; newValue: string }>
-    ) {
-      const { labFull, paramName, newValue } = action.payload;
-      for (const dir of state.directions) {
-        const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab) {
-          const p = lab.parameters.find((pp) => pp.name === paramName);
-          if (p) {
-            if (paramName === "Шаг") {
-              const num = parseFloat(newValue);
-              p.value = (num < 0.01 ? 0.01 : num).toString();
+        updateLabParameter(
+            state,
+            action: PayloadAction<{ labFull: string; paramName: string; newValue: string }>
+        ) {
+            const {labFull, paramName, newValue} = action.payload;
+            console.log("updateLabParameter:", {labFull, paramName, newValue});
+            for (const dir of state.directions) {
+                const lab = dir.labs.find((l) => l.full === labFull);
+                if (lab) {
+                    const p = lab.parameters.find((pp) => pp.name === paramName);
+                    if (p) {
+                        if (paramName === "Шаг") {
+                            const num = parseFloat(newValue);
+                            p.value = (num < 0.01 ? 0.01 : num).toString();
+                        } else {
+                            p.value = newValue;
+                        }
+                    }
+                    break;
+                }
+            }
+        },
+
+        clearGraphs(state, action: PayloadAction<{ labFull: string }>) {
+            const {labFull} = action.payload;
+            console.log("clearGraphs:", labFull);
+            for (const dir of state.directions) {
+                const lab = dir.labs.find((l) => l.full === labFull);
+                if (lab) {
+                    Object.keys(lab.graphStorage).forEach((graphName) => {
+                        lab.graphStorage[graphName] = [];
+                    });
+                    break;
+                }
+            }
+        },
+
+        updateNote(
+            state,
+            action: PayloadAction<{ labFull: string; newNote: string }>
+        ) {
+            const {labFull, newNote} = action.payload;
+            console.log("updateNote:", {labFull, newNote});
+            for (const dir of state.directions) {
+                const lab = dir.labs.find((l) => l.full === labFull);
+                if (lab) {
+                    lab.note = newNote;
+                    break;
+                }
+            }
+        },
+
+        setDirectionsFromAPI(state, action: PayloadAction<APIDirection[]>) {
+            console.log("setDirectionsFromAPI: Загрузка направлений");
+            const apiDirections = action.payload;
+            const existingGraphStorage: { [labFull: string]: { [graphName: string]: GraphData[] } } = {};
+            state.directions.forEach((dir) => {
+                dir.labs.forEach((lab) => {
+                    existingGraphStorage[lab.full] = {...lab.graphStorage};
+                });
+            });
+
+            state.directions = apiDirections.map((apiDir) => ({
+                id: apiDir.id,
+                name: apiDir.name,
+                labs: apiDir.labs.map((apiLab) => {
+                    let graphNames = apiLab.graphs.map((g: APIGraph) => g.name);
+                    const hasAmp = graphNames.includes("ЛАФЧХ (амплитуда)");
+                    const hasPhase = graphNames.includes("ЛАФЧХ (фаза)");
+
+                    if (hasAmp && hasPhase) {
+                        graphNames = graphNames.filter(
+                            (n: string) => n !== "ЛАФЧХ (амплитуда)" && n !== "ЛАФЧХ (фаза)"
+                        );
+                        if (!graphNames.includes("ЛАФЧХ")) {
+                            graphNames.push("ЛАФЧХ");
+                        }
+                    }
+
+                    if (apiDir.name === "ТАУ Нелин") {
+                        graphNames = ["Тест"];
+                    }
+
+                    let activeGraph = apiLab.active_graph;
+                    if (
+                        ["ЛАФЧХ (амплитуда)", "ЛАФЧХ (фаза)"].includes(activeGraph) &&
+                        hasAmp &&
+                        hasPhase
+                    ) {
+                        activeGraph = "ЛАФЧХ";
+                    } else if (apiDir.name === "ТАУ Нелин") {
+                        activeGraph = "Тест";
+                    }
+
+                    const storageEntries = graphNames.map((g: string) => [g, []]);
+                    const graphStorageObj = Object.fromEntries(storageEntries);
+
+                    const graphAxesObj: { [key: string]: AxisSettings } = {};
+                    if (apiDir.name === "ТАУ Нелин") {
+                        graphAxesObj["Тест"] = {
+                            xLabel: "Время",
+                            yLabel: "Амплитуда",
+                            logX: false,
+                        };
+                    } else {
+                        apiLab.graphs.forEach((g: APIGraph) => {
+                            graphAxesObj[g.name] = {
+                                xLabel: g.x_label,
+                                yLabel: g.y_label,
+                                logX: g.log_x,
+                            };
+                        });
+                        if (hasAmp && hasPhase) {
+                            graphAxesObj["ЛАФЧХ"] = {
+                                xLabel: "ω, рад/с",
+                                yLabel: "ДБ + Фаза",
+                                logX: true,
+                            };
+                        }
+                    }
+
+                    const restoredGraphStorage = existingGraphStorage[apiLab.full] || graphStorageObj;
+
+                    return {
+                        id: apiLab.id,
+                        short: apiLab.short,
+                        full: apiLab.full,
+                        note: apiLab.note,
+                        parameters: apiLab.parameters,
+                        graphs: graphNames,
+                        activeGraph,
+                        graphStorage: restoredGraphStorage,
+                        graphAxes: graphAxesObj,
+                        nonlinearities: apiLab.nonlinearities || [],
+                        selectedNonlinearity: apiLab.nonlinearities?.length > 0 ? apiLab.nonlinearities[0] : undefined,
+                    };
+                }),
+            }));
+
+            if (state.directions.length > 0) {
+                state.activeDirection = state.directions[0].name;
+                if (state.directions[0].labs.length > 0) {
+                    state.activeLab = state.directions[0].labs[0].full;
+                } else {
+                    state.activeLab = null;
+                }
+            }
+            console.log("setDirectionsFromAPI: directions после обновления:", state.directions);
+        },
+
+        addGraph(state, action: PayloadAction<{ labFull: string }>) {
+            const {labFull} = action.payload;
+            console.log("addGraph:", labFull);
+            for (const dir of state.directions) {
+                const lab = dir.labs.find((l) => l.full === labFull);
+                if (lab) {
+                    if (!lab.graphStorage["Тест"]) {
+                        lab.graphStorage["Тест"] = [];
+                    }
+                    break;
+                }
+            }
+        },
+
+        setNonlinearity(
+            state,
+            action: PayloadAction<{ labFull: string; nonlinearity: string }>
+        ) {
+            const {labFull, nonlinearity} = action.payload;
+            console.log("setNonlinearity:", {labFull, nonlinearity});
+            for (const dir of state.directions) {
+                if (dir.name !== "ТАУ Нелин") continue;
+                const lab = dir.labs.find((l) => l.full === labFull);
+                if (lab && lab.nonlinearities?.includes(nonlinearity)) {
+                    lab.selectedNonlinearity = nonlinearity;
+                    console.log(`Обновление selectedNonlinearity для ${labFull}: ${nonlinearity}`);
+                    break;
+                } else {
+                    console.warn(`Лаборатория с labFull=${labFull} не найдена или нелинейность ${nonlinearity} недоступна`);
+                }
+            }
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(calculateLab.fulfilled, (state, action) => {
+            const {directionId, labId, data} = action.payload;
+            console.log("calculateLab.fulfilled:", {directionId, labId, data});
+            const dir = state.directions.find((d) => d.id === directionId);
+            if (!dir) {
+                console.warn(`Направление с id ${directionId} не найдено`);
+                return;
+            }
+            const lab = dir.labs.find((l) => l.id === labId);
+            if (!lab) {
+                console.warn(`Лаборатория с id ${labId} не найдена`);
+                return;
+            }
+
+            if (dir.name === "ТАУ Нелин") {
+                if (!lab.graphStorage["Тест"]) {
+                    lab.graphStorage["Тест"] = [];
+                }
+                const nl = lab.selectedNonlinearity;
+                const nlKey = `Тест_${nl}`;
+                if (nl && data[nlKey]) {
+                    const {x, y, desc} = data[nlKey];
+                    if (Array.isArray(x) && Array.isArray(y)) {
+                        lab.graphStorage["Тест"].push({
+                            id: lab.graphStorage["Тест"].length + 1,
+                            title: desc || `График для ${nl}`,
+                            x,
+                            y,
+                        });
+                        console.log(`Добавлен нелинейный график для ${nl}:`, {x, y, desc});
+                    } else {
+                        console.warn(`Некорректные данные x или y для нелинейности ${nl}:`, {x, y});
+                    }
+                } else {
+                    console.warn(`Данные для нелинейности ${nl} отсутствуют в ответе:`, data);
+                }
             } else {
-              p.value = newValue;
+                for (const graphName in data) {
+                    if (!lab.graphStorage[graphName]) {
+                        lab.graphStorage[graphName] = [];
+                    }
+                    if (data[graphName].x && data[graphName].y) {
+                        const {x, y, desc} = data[graphName];
+                        if (Array.isArray(x) && Array.isArray(y)) {
+                            lab.graphStorage[graphName].push({
+                                id: lab.graphStorage[graphName].length + 1,
+                                title: desc || `График ${graphName}`,
+                                x,
+                                y,
+                            });
+                            console.log(`Добавлен график ${graphName}:`, {x, y, desc});
+                        } else {
+                            console.warn(`Некорректные данные x или y для графика ${graphName}:`, {x, y});
+                        }
+                    }
+                }
             }
-          }
-          break;
-        }
-      }
-    },
-
-    clearGraphs(state, action: PayloadAction<{ labFull: string }>) {
-      const { labFull } = action.payload;
-      for (const dir of state.directions) {
-        const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab) {
-          Object.keys(lab.graphStorage).forEach((graphName) => {
-            lab.graphStorage[graphName] = [];
-          });
-          break;
-        }
-      }
-    },
-
-    updateNote(
-      state,
-      action: PayloadAction<{ labFull: string; newNote: string }>
-    ) {
-      const { labFull, newNote } = action.payload;
-      for (const dir of state.directions) {
-        const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab) {
-          lab.note = newNote;
-          break;
-        }
-      }
-    },
-
-    setDirectionsFromAPI(state, action: PayloadAction<APIDirection[]>) {
-      const apiDirections = action.payload;
-      // Сохраняем существующие graphStorage перед перезаписью
-      const existingGraphStorage: { [labFull: string]: { [graphName: string]: GraphData[] } } = {};
-      state.directions.forEach((dir) => {
-        dir.labs.forEach((lab) => {
-          existingGraphStorage[lab.full] = { ...lab.graphStorage };
+            console.log(`calculateLab.fulfilled: Обновлен graphStorage для лаборатории ${labId}:`, lab.graphStorage);
         });
-      });
 
-      state.directions = apiDirections.map((apiDir) => {
-        return {
-          id: apiDir.id,
-          name: apiDir.name,
-          labs: apiDir.labs.map((apiLab) => {
-            let graphNames = apiLab.graphs.map((g) => g.name);
-            const hasAmp = graphNames.includes("ЛАФЧХ (амплитуда)");
-            const hasPhase = graphNames.includes("ЛАФЧХ (фаза)");
-
-            if (hasAmp && hasPhase) {
-              graphNames = graphNames.filter(
-                (n) => n !== "ЛАФЧХ (амплитуда)" && n !== "ЛАФЧХ (фаза)"
-              );
-              if (!graphNames.includes("ЛАФЧХ")) {
-                graphNames.push("ЛАФЧХ");
-              }
-            }
-
-            let activeGraph = apiLab.active_graph;
-            if (
-              ["ЛАФЧХ (амплитуда)", "ЛАФЧХ (фаза)"].includes(activeGraph) &&
-              hasAmp && hasPhase
-            ) {
-              activeGraph = "ЛАФЧХ";
-            }
-
-            const storageEntries = apiLab.graphs.map((g) => [g.name, []]);
-            if (hasAmp && hasPhase) {
-              storageEntries.push(["ЛАФЧХ", []]);
-            }
-
-            const graphStorageObj = Object.fromEntries(storageEntries);
-
-            const graphAxesObj = Object.fromEntries(
-              apiLab.graphs.map((g) => [
-                g.name,
-                {
-                  xLabel: g.x_label,
-                  yLabel: g.y_label,
-                  logX: g.log_x,
-                },
-              ])
-            );
-            if (hasAmp && hasPhase) {
-              graphAxesObj["ЛАФЧХ"] = {
-                xLabel: "ω, рад/с",
-                yLabel: "ДБ + Фаза",
-                logX: true,
-              };
-            }
-
-            // Восстанавливаем graphStorage, если он уже был
-            const restoredGraphStorage = existingGraphStorage[apiLab.full] || graphStorageObj;
-
-            return {
-              id: apiLab.id,
-              short: apiLab.short,
-              full: apiLab.full,
-              note: apiLab.note,
-              parameters: apiLab.parameters,
-              graphs: graphNames,
-              activeGraph,
-              graphStorage: restoredGraphStorage,
-              graphAxes: graphAxesObj,
-            };
-          }),
-        };
-      });
-
-      if (state.directions.length > 0) {
-        state.activeDirection = state.directions[0].name;
-        if (state.directions[0].labs.length > 0) {
-          state.activeLab = state.directions[0].labs[0].full;
-        } else {
-          state.activeLab = null;
-        }
-      }
-      console.log("setDirectionsFromAPI: directions после обновления:", state.directions);
-    },
-
-    addGraph(state, action: PayloadAction<{ labFull: string }>) {
-      const { labFull } = action.payload;
-      for (const dir of state.directions) {
-        const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab) {
-          const { activeGraph } = lab;
-          if (!lab.graphStorage[activeGraph]) {
-            lab.graphStorage[activeGraph] = [];
-          }
-          const newId = lab.graphStorage[activeGraph].length + 1;
-          lab.graphStorage[activeGraph].push({
-            id: newId,
-            title: `Graph (${activeGraph}) #${newId}`,
-            x: [],
-            y: [],
-          });
-          return;
-        }
-      }
-    },
-
-    updateGraphStorage(
-      state,
-      action: PayloadAction<{ labFull: string; graphData: { [graphName: string]: GraphData[] } }>
-    ) {
-      const { labFull, graphData } = action.payload;
-      for (const dir of state.directions) {
-        const lab = dir.labs.find((l) => l.full === labFull);
-        if (lab) {
-          const formattedGraphData = Object.keys(graphData).reduce((acc: { [key: string]: GraphData[] }, graphName) => {
-            acc[graphName] = Array.isArray(graphData[graphName]) ? graphData[graphName] : [];
-            return acc;
-          }, {});
-          lab.graphStorage = { ...lab.graphStorage, ...formattedGraphData };
-          console.log(`updateGraphStorage: Обновлён graphStorage для ${labFull}:`, lab.graphStorage);
-          break;
-        }
-      }
-    },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(calculateLab.fulfilled, (state, action) => {
-      const { directionId, labId, data } = action.payload;
-      const dir = state.directions.find((d) => d.id === directionId);
-      if (!dir) return;
-      const lab = dir.labs.find((l) => l.id === labId);
-      if (!lab) return;
-
-      for (const graphName in data) {
-        if (!lab.graphStorage[graphName]) {
-          lab.graphStorage[graphName] = [];
-        }
-        const { x, y, desc } = data[graphName];
-        const newId = lab.graphStorage[graphName].length + 1;
-        lab.graphStorage[graphName].push({
-          id: newId,
-          title: desc || `Graph (${graphName}) #${newId}`,
-          x,
-          y,
+        builder.addCase(calculateLab.rejected, (_state, action) => {
+            console.error("calculateLab.rejected:", action.payload);
         });
-      }
-      console.log(`calculateLab.fulfilled: Обновлён graphStorage для lab ${labId}:`, lab?.graphStorage);
-    });
-
-    builder.addCase(calculateLab.rejected, (_state, action) => {
-      console.error("Ошибка при расчёте графиков:", action.payload);
-    });
-  },
+    },
 });
 
 export const {
-  setActiveDirection,
-  setActiveLab,
-  setActiveGraphForLab,
-  updateLabParameter,
-  clearGraphs,
-  updateNote,
-  setDirectionsFromAPI,
-  addGraph,
-  updateGraphStorage,
+    setActiveDirection,
+    setActiveLab,
+    setActiveGraphForLab,
+    updateLabParameter,
+    clearGraphs,
+    updateNote,
+    setDirectionsFromAPI,
+    addGraph,
+    setNonlinearity,
 } = directionSlice.actions;
 
 export default directionSlice.reducer;

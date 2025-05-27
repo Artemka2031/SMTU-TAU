@@ -2,16 +2,14 @@
 @use './NoteInput';
 @use './GraphButton';
 @use './DeleteButton';
+@use './NonlinearityButton';
 
 .panel {
   /* Квадратная панель с фиксированными размерами по высоте и адаптивной шириной */
   width: 400px;
-  height: 1080;
-  // border: 1px solid #ddd;
+  height: 1080px;
   border-radius: 1vh;
-  // padding: 2vh 2vw;
   background-color: #fff;
-  // box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.1);
   margin: 2.5vh auto;
   display: flex;
   flex-direction: column;
@@ -24,17 +22,28 @@
     font-size: 2vh;
   }
 
-  // /* Контейнер для параметров */
-  // .parameters {
-  //   /* Располагается вверху – можно добавить отступы, если необходимо */
-  // }
+  .nonlinearities {
+    margin: 1.5vh 0;
 
-  /* Контейнер для примечания и кнопок – прижат к низу */
-  .bottom-block {
-    margin-top: auto;
+    h3 {
+      text-align: left;
+      color: #333;
+      font-size: 1.8vh;
+      margin-bottom: 0.8vh;
+    }
+
+    .nonlinearity-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5vh; /* Уменьшенный отступ между кнопками */
+      justify-content: space-between;
+    }
   }
 
-  /* Отступ между дочерними элементами внутри bottom-block */
+  /*.bottom-block {
+    margin-top: auto;
+  }*/
+
   .bottom-block > * {
     margin-bottom: 1vh;
   }

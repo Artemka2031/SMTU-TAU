@@ -1,0 +1,23 @@
+.nonlinearity-button {
+  flex: 1 1 calc(25% - 0.5vh); /* 4 кнопки в ряд с учетом отступов */
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 1vh;
+  padding: 0.8vh 0.8vw;
+  font-size: 1.6vh;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  text-align: center;
+
+  &.active {
+    background-color: #e0e0e0;
+    border-color: #888;
+    color: #333;
+    font-weight: bold; /* Добавляем для большей заметности активного состояния */
+  }
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}
