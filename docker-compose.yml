@@ -1,22 +1,22 @@
-services:
-  backend:
-    build:
-      context: .
-      dockerfile: ./Backend/Dockerfile
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./Backend:/app
-    environment:
-      - DEBUG=1  # Включаем DEBUG для локальной отладки
-    command: >
-      sh -c "python manage.py migrate && \
-             python manage.py scan_labs && \
-             python manage.py collectstatic --noinput && \
-             gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"
-    networks:
-      - app-network
+   services:
+     backend:
+       build:
+         context: .
+         dockerfile: ./Backend/Dockerfile
+       ports:
+         - "8000:8000"
+       volumes:
+         - ./Backend:/app
+       environment:
+         - DEBUG=0
+       command: >
+         sh -c "python manage.py migrate && \
+                python manage.py scan_labs && \
+                python manage.py collectstatic --noinput --verbosity 2 && \
+                gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"
+       networks:
+         - app-network
 
-networks:
-  app-network:
-    driver: bridge
+     networks:
+       app-network:
+         driver: bridge
