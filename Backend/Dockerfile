@@ -54,6 +54,8 @@ CMD ["sh", "-c", "echo 'Starting server on https://${DOMAIN_NAME}' && \
                  python manage.py scan_labs && \
                  echo 'Running collectstatic...' && \
                  python manage.py collectstatic --noinput --verbosity 2 && \
+                 echo 'Setting permissions for staticfiles...' && \
+                 chmod -R 755 /app/staticfiles && \
                  echo 'Checking /app/staticfiles contents after collectstatic:' && \
                  ls -la /app/staticfiles && \
                  find /app/staticfiles -type f && \

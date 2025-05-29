@@ -74,14 +74,13 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/assets/'
-# Укажем, что содержимое /frontend_dist/assets должно копироваться в /app/staticfiles/assets/
 STATICFILES_DIRS = [
     ("assets", FRONTEND_DIST_DIR / "assets"),
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Используем ManifestStaticFilesStorage для продакшена
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+# Временно используем StaticFilesStorage для отладки
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Логирование
 LOGGING = {
