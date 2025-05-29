@@ -5,7 +5,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIST_DIR = Path('/frontend_dist')
 
 SECRET_KEY = 'django-insecure-+uz7o8#)z3647+v3^wx$g43#@exdr=xb%szode^bdo#w17'
-# DEBUG = os.getenv('DEBUG', '1') == '1'
 DEBUG = os.getenv('DEBUG', '0') == '1'
 ALLOWED_HOSTS = ['*']
 
@@ -75,11 +74,13 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/assets/'
-STATICFILES_DIRS = [FRONTEND_DIST_DIR / "assets"]
+# Изменим STATICFILES_DIRS, чтобы файлы копировались в поддиректорию assets/
+STATICFILES_DIRS = [
+    ("assets", FRONTEND_DIST_DIR / "assets"),  # Копировать содержимое /frontend_dist/assets в /app/staticfiles/assets/
+]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Используем StaticFilesStorage для отладки
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Логирование

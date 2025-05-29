@@ -27,11 +27,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем код бэкенда
 COPY Backend .
 
-# Копируем собранный фронтенд из предыдущего этапа
+# Копируем собранный фронтенд
 COPY --from=frontend-build /frontend/dist /frontend_dist
 
 # Проверяем содержимое /frontend_dist
 RUN ls -la /frontend_dist && ls -la /frontend_dist/assets
+
+# Устанавливаем права
+RUN chmod -R 755 /frontend_dist
 
 ENV PYTHONUNBUFFERED=1
 
