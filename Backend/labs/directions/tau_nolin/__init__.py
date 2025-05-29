@@ -1,8 +1,11 @@
 from labs.config_models import LabConfig, DirectionConfig
 from .lab1 import Lab1_TAU_NoLin
 from .lab2 import Lab2_TAU_NoLin
+from .lab3 import Lab3_TAU_NoLin
+from .lab4 import Lab4_TAU_NoLin
+from .lab5 import Lab5_TAU_NoLin
 
-LABS = [Lab1_TAU_NoLin, Lab2_TAU_NoLin]
+LABS = [Lab1_TAU_NoLin, Lab2_TAU_NoLin, Lab3_TAU_NoLin, Lab4_TAU_NoLin, Lab5_TAU_NoLin]
 
 labs_config = []
 for lab_cls in LABS:

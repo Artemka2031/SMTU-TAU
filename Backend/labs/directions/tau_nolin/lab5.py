@@ -4,10 +4,10 @@ from labs.base_lab import BaseLab
 from labs.directions.tau_nolin.nonlinearities import two_pose_rele, three_pose_rele, amplifier_with_saturation, amplifier_with_insensitivity, amplifier_with_saturation_and_insensitivity, rele_with_histeresis, luft, rele_with_insensetivity_and_hysteresis
 
 
-class Lab2_TAU_NoLin(BaseLab):
-    short = "2"
-    full = "2 ЛР: Нелинейные системы"
-    note = "Лабораторная работа по нелинейным системам 2"
+class Lab5_TAU_NoLin(BaseLab):
+    short = "5"
+    full = "5 ЛР: Нелинейные системы"
+    note = "Лабораторная работа по нелинейным системам 5"
     active_graph = "x(t)"
 
     default_params = {
@@ -18,8 +18,8 @@ class Lab2_TAU_NoLin(BaseLab):
         "φ0": "0.0",
         "μ0": "0.0",
         "z": "1",
-        "a": "1",
-        "b": "0",
+        "a": "0",
+        "b": "1",
         "c": "0",
         "K": "0",
         "t": "25"
@@ -37,7 +37,12 @@ class Lab2_TAU_NoLin(BaseLab):
     expected_params = ["δ", "Ts", "Ta", "θ", "φ0", "μ0", "z", "a", "b", "c", "K", "t"]
 
     nonlinearities = {
-        "2-х позиционное реле": lambda x, dx_dt, a, b, c, K: two_pose_rele(x, a)
+        "3-х позиционное реле": lambda x, dx_dt, a, b, c, K: three_pose_rele(x, a, b),
+        "Усилитель с насыщением": lambda x, dx_dt, a, b, c, K: amplifier_with_saturation(x, a, b, K),
+        "Усилитель с зоной нечувствительности": lambda x, dx_dt, a, b, c, K: amplifier_with_insensitivity(x, a, b, K),
+        "Усилитель с зоной нечувствительности и ограничением": lambda x, dx_dt, a, b, c, K: amplifier_with_saturation_and_insensitivity(x, a, b, c, K),
+        "Реле с зоной нечувствительности и гистерезисом": lambda x, dx_dt, a, b, c, K: rele_with_insensetivity_and_hysteresis(x, dx_dt, a, b, c, K),
+
     }
 
     @classmethod
@@ -87,6 +92,11 @@ class Lab2_TAU_NoLin(BaseLab):
             phi = phi + dt * d_phi_dt
             mu = mu + dt * d_mu_dt
 
+            if np.isnan(phi) or np.isinf(phi):
+                phi = 0.0
+            if np.isnan(mu) or np.isinf(mu):
+                mu = 0.0
+
         x_range = np.linspace(min(x_values) - 1, max(x_values) + 1, 1000)
         Fx_range = [nl_func(x, 0.0, a, b, c, K) for x in x_range]
 
@@ -105,28 +115,28 @@ class Lab2_TAU_NoLin(BaseLab):
 
     @classmethod
     def plot_phi_t(cls, params, graph_params, nl_name):
-        count_of_dots = int(graph_params.get("count_of_points", 2000))
+        count_of_dots = int(graph_params.get("count_of_points", 10000))
         nl_func = cls.nonlinearities[nl_name]
         data = cls._calculate_euler(params, count_of_dots, nl_func, nl_name)
         return {"x": data["t"], "y": data["phi_values"], "desc": f"Выходной сигнал φ(t) для {nl_name}"}
 
     @classmethod
     def plot_mu_t(cls, params, graph_params, nl_name):
-        count_of_dots = int(graph_params.get("count_of_points", 2000))
+        count_of_dots = int(graph_params.get("count_of_points", 10000))
         nl_func = cls.nonlinearities[nl_name]
         data = cls._calculate_euler(params, count_of_dots, nl_func, nl_name)
         return {"x": data["t"], "y": data["mu_values"], "desc": f"Выходной сигнал регулятора μ(t) для {nl_name}"}
 
     @classmethod
     def plot_x_t(cls, params, graph_params, nl_name):
-        count_of_dots = int(graph_params.get("count_of_points", 2000))
+        count_of_dots = int(graph_params.get("count_of_points", 10000))
         nl_func = cls.nonlinearities[nl_name]
         data = cls._calculate_euler(params, count_of_dots, nl_func, nl_name)
         return {"x": data["t"], "y": data["x_values"], "desc": f"Входное воздействие x(t) для {nl_name}"}
 
     @classmethod
     def plot_Fx_t(cls, params, graph_params, nl_name):
-        count_of_dots = int(graph_params.get("count_of_points", 2000))
+        count_of_dots = int(graph_params.get("count_of_points", 10000))
         nl_func = cls.nonlinearities[nl_name]
         data = cls._calculate_euler(params, count_of_dots, nl_func, nl_name)
         return {"x": data["t"], "y": data["Fx_values"], "desc": f"Выходное воздействие F(x)(t) для {nl_name}"}
@@ -147,7 +157,7 @@ class Lab2_TAU_NoLin(BaseLab):
 
     @classmethod
     def plot_nonlinearity(cls, params, graph_params, nl_name):
-        count_of_dots = int(graph_params.get("count_of_points", 2000))
+        count_of_dots = int(graph_params.get("count_of_points", 10000))
         nl_func = cls.nonlinearities[nl_name]
         data = cls._calculate_euler(params, count_of_dots, nl_func, nl_name)
 

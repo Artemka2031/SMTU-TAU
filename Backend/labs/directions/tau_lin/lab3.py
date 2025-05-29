@@ -19,17 +19,18 @@ class Lab3_TAU_Lin(BaseLab):
         "Xm": "4.0",
         "T1": "2.0",
         "T2": "1.0",
-        "t": "25"
+        "t": "25",
+        "w": "100"
     }
     default_graphs = {
         "ПХ": ("Время", "Амплитуда", False),
-        "АЧХ": ("Частота, рад/с", "Амплитуда", True),
-        "ФЧХ": ("Частота, рад/с", "Фаза, °", True),
+        "АЧХ": ("Частота, рад/с", "Амплитуда", False),
+        "ФЧХ": ("Частота, рад/с", "Фаза, °", False),
         "АФЧХ": ("Re", "Im", False),
         "ЛАФЧХ (амплитуда)": ("Частота, рад/с", "дБ", True),
         "ЛАФЧХ (фаза)": ("Частота, рад/с", "°", True)
     }
-    expected_params = ["K1", "K2", "Xm", "T1", "T2", "t"]
+    expected_params = ["K1", "K2", "Xm", "T1", "T2", "t", "w"]
 
     @staticmethod
     def calculate_PH(K1, K2, Xm, T1, T2, t, count_of_dots):
@@ -39,13 +40,13 @@ class Lab3_TAU_Lin(BaseLab):
 
     @staticmethod
     def calculate_ACH(K1, K2, T1, T2, count_of_dots, w_end):
-        omega = np.logspace(np.log10(0.001), np.log10(w_end), count_of_dots)
+        omega = np.linspace(0.001, w_end, count_of_dots)
         amplitude = (K1 * K2) / np.sqrt((T1**2 * omega**2 + 1) * (T2**2 * omega**2 + 1))
         return omega.tolist(), amplitude.tolist()
 
     @staticmethod
     def calculate_FCHH(T1, T2, count_of_dots, w_end):
-        omega = np.logspace(np.log10(0.001), np.log10(w_end), count_of_dots)
+        omega = np.linspace(0.001, w_end, count_of_dots)
         phase = - (np.arctan(T1 * omega) + np.arctan(T2 * omega))
         return omega.tolist(), phase.tolist()
 
@@ -75,8 +76,10 @@ class Lab3_TAU_Lin(BaseLab):
         T1 = float(params["T1"])
         T2 = float(params["T2"])
         t = float(params["t"])
-        count_of_dots = int(graph_params.get("count_of_points", 500))
-        w_end = float(graph_params.get("w_end", 100.0))
+        count_of_dots = 10000
+        w_end = float(params["w"])
+        # count_of_dots = int(graph_params.get("count_of_points", 500))
+        # w_end = float(graph_params.get("w_end", 100.0))
 
         x_PH, y_PH = cls.calculate_PH(K1, K2, Xm, T1, T2, t, count_of_dots)
         x_ACH, y_ACH = cls.calculate_ACH(K1, K2, T1, T2, count_of_dots, w_end)
