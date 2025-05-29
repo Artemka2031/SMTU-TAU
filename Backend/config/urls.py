@@ -1,7 +1,6 @@
 import os
 
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include, re_path
@@ -21,7 +20,6 @@ def debug_staticfiles(request):
             files.append(os.path.join(root, filename))
     return HttpResponse("<br>".join(files), content_type="text/plain")
 
-
 # Эндпоинт для отладки index.html
 def debug_index_html(request):
     with open(os.path.join(settings.FRONTEND_DIST_DIR, 'index.html'), 'r') as f:
@@ -35,11 +33,13 @@ directions_router = NestedDefaultRouter(router, r'directions', lookup='direction
 directions_router.register(r'labs', LabWorkViewSet, basename='direction-labs')
 
 urlpatterns = [
-                  path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/', include(directions_router.urls)),
-                  path('debug/staticfiles/', debug_staticfiles, name='debug_staticfiles'),
-                  path('debug/index-html/', debug_index_html, name='debug_index_html'),  # Новый эндпоинт
-                  re_path(r'^(?!assets/|api/|admin/).*$', TemplateView.as_view(template_name='index.html'),
-                          name='home'),
-              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('debug/staticfiles/', debug_staticfiles, name='debug_staticfiles'),
+    path('debug/index-html/', debug_index_html, name='debug_index_html'),
+    re_path(r'^(?!assets/|api/|admin/).*$', TemplateView.as_view(
+        template_name='index.html',
+        extra_context={'name': 'SMTU-TAU'}
+    ), name='home'),
+]

@@ -58,6 +58,7 @@ CMD ["sh", "-c", "echo 'Starting server on https://${DOMAIN_NAME}' && \
                  chmod -R 755 /app/staticfiles && \
                  echo 'Checking /app/staticfiles contents after collectstatic:' && \
                  ls -la /app/staticfiles && \
+                 ls -la /app/staticfiles/assets && \
                  find /app/staticfiles -type f && \
                  echo 'Starting Gunicorn...' && \
                  gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"]
