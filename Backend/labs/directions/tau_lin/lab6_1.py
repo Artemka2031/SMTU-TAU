@@ -19,18 +19,23 @@ class Lab6_1_TAU_Lin(BaseLab):
         "K3": "1.0",
         "T1": "1.0",
         "T2": "1.0",
-        "T3": "1.0"
+        "T3": "1.0",
+        "w": "100"
     }
     default_graphs = {
-        "АЧХ": ("Частота, рад/с", "Амплитуда", True),
+        "АЧХ": ("Частота, рад/с", "Амплитуда", False),
         "АФЧХ": ("Re", "Im", False),
         "Годограф Михайлова": ("Re", "Im", False)
     }
-    expected_params = ["K1", "K2", "K3", "T1", "T2", "T3"]
+    expected_params = ["K1", "K2", "K3", "T1", "T2", "T3", "w"]
 
     @staticmethod
-    def calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end):
+    def calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end, is_ach:bool):
         omega = np.logspace(np.log10(0.001), np.log10(w_end), count_of_dots)
+
+        if is_ach:
+            omega = np.linspace(0.001, w_end, count_of_dots)
+
         p = 1j * omega
         H = (K1 * K2 * (T3 * p + 1)) / (
             T1 * T2 * T3 * p**3 +
@@ -42,13 +47,13 @@ class Lab6_1_TAU_Lin(BaseLab):
 
     @staticmethod
     def calculate_ACH(K1, K2, K3, T1, T2, T3, count_of_dots, w_end):
-        omega, H = Lab6_1_TAU_Lin.calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end)
+        omega, H = Lab6_1_TAU_Lin.calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end, True)
         amplitude = [abs(h) for h in H]
         return omega, amplitude
 
     @staticmethod
     def calculate_AFCH(K1, K2, K3, T1, T2, T3, count_of_dots, w_end):
-        omega, H = Lab6_1_TAU_Lin.calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end)
+        omega, H = Lab6_1_TAU_Lin.calculate_response(K1, K2, K3, T1, T2, T3, count_of_dots, w_end, False)
         Re = [np.real(h) for h in H]
         Im = [np.imag(h) for h in H]
         return omega, Re, Im
@@ -76,8 +81,10 @@ class Lab6_1_TAU_Lin(BaseLab):
         T1 = float(params["T1"])
         T2 = float(params["T2"])
         T3 = float(params["T3"])
-        count_of_dots = int(graph_params.get("count_of_points", 500))
-        w_end = float(graph_params.get("w_end", 100.0))
+        count_of_dots = 10000
+        w_end = float(params["w"])
+        # count_of_dots = int(graph_params.get("count_of_points", 500))
+        # w_end = float(graph_params.get("w_end", 100.0))
 
         x_ACH, y_ACH = cls.calculate_ACH(K1, K2, K3, T1, T2, T3, count_of_dots, w_end)
         x_AFCH, Re_AFCH, Im_AFCH = cls.calculate_AFCH(K1, K2, K3, T1, T2, T3, count_of_dots, w_end)

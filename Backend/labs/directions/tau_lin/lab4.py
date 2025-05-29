@@ -18,12 +18,13 @@ class Lab4_TAU_Lin(BaseLab):
         "Xm": "4.0",
         "T": "2.0",
         "xi": "0.5",
-        "t": "35"
+        "t": "35",
+        "w": "100"
     }
     default_graphs = {
         "ПХ": ("Время", "Амплитуда", False),
-        "АЧХ": ("Частота, рад/с", "Амплитуда", True),
-        "ФЧХ": ("Частота, рад/с", "Фаза, °", True),
+        "АЧХ": ("Частота, рад/с", "Амплитуда", False),
+        "ФЧХ": ("Частота, рад/с", "Фаза, °", False),
         "АФЧХ": ("Re", "Im", False),
         "ЛАФЧХ (амплитуда)": ("Частота, рад/с", "дБ", True),
         "ЛАФЧХ (фаза)": ("Частота, рад/с", "°", True)
@@ -41,13 +42,13 @@ class Lab4_TAU_Lin(BaseLab):
 
     @staticmethod
     def calculate_ACH(K, T, xi, count_of_dots, w_end):
-        omega = np.logspace(np.log10(0.001), np.log10(w_end), count_of_dots)
+        omega = np.linspace(0.001, w_end, count_of_dots)
         amplitude = K / np.sqrt((1 - T**2 * omega**2)**2 + (2 * xi * T * omega)**2)
         return omega.tolist(), amplitude.tolist()
 
     @staticmethod
     def calculate_FCHH(T, xi, count_of_dots, w_end):
-        omega = np.logspace(np.log10(0.001), np.log10(w_end), count_of_dots)
+        omega = np.linspace(0.001, w_end, count_of_dots)
         phase = -np.arctan2((2 * xi * T * omega), (1 - T**2 * omega**2))
         return omega.tolist(), phase.tolist()
 
@@ -76,8 +77,10 @@ class Lab4_TAU_Lin(BaseLab):
         T = float(params["T"])
         xi = float(params["xi"])
         t = float(params["t"])
-        count_of_dots = int(graph_params.get("count_of_points", 500))
-        w_end = float(graph_params.get("w_end", 100.0))
+        count_of_dots = 10000
+        w_end = float(params["w"])
+        # count_of_dots = int(graph_params.get("count_of_points", 500))
+        # w_end = float(graph_params.get("w_end", 100.0))
 
         x_PH, y_PH = cls.calculate_PH(K, Xm, T, xi, t, count_of_dots)
         x_ACH, y_ACH = cls.calculate_ACH(K, T, xi, count_of_dots, w_end)

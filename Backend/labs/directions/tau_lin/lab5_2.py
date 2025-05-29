@@ -19,20 +19,21 @@ class Lab5_2_TAU_Lin(BaseLab):
         "K2": "0.5",
         "T1": "0.5",
         "T2": "10.0",
-        "xi": "0.5"
+        "xi": "0.5",
+        "w": "100"
     }
     default_graphs = {
-        "АЧХ": ("Частота, рад/с", "Амплитуда", True),
+        "АЧХ": ("Частота, рад/с", "Амплитуда", False),
         "АФЧХ": ("Re", "Im", False),
         "ЛАФЧХ (амплитуда)": ("Частота, рад/с", "дБ", True),
         "ЛАФЧХ (фаза)": ("Частота, рад/с", "°", True)
     }
-    expected_params = ["K1", "K2", "T1", "T2", "xi"]
+    expected_params = ["K1", "K2", "T1", "T2", "xi", "w"]
 
     @staticmethod
     def calculate_ACH(K1, K2, T1, T2, xi, count_of_dots, w_end):
         """Расчёт амплитудно-частотной характеристики (АЧХ)"""
-        omega = np.logspace(np.log10(0.001), np.log10(w_end), count_of_dots)
+        omega = np.linspace(0.001, w_end, count_of_dots)
         amplitude = (K1 * K2) / np.sqrt(
             (1 + T1 ** 2 * omega ** 2) * ((1 - T2 ** 2 * omega ** 2) ** 2 + (2 * xi * T2 * omega) ** 2))
         return omega.tolist(), amplitude.tolist()
@@ -76,8 +77,10 @@ class Lab5_2_TAU_Lin(BaseLab):
         T1 = float(params["T1"])
         T2 = float(params["T2"])
         xi = float(params["xi"])
-        count_of_dots = int(graph_params.get("count_of_points", 500))
-        w_end = float(graph_params.get("w_end", 100.0))
+        count_of_dots = 10000
+        w_end = float(params["w"])
+        # count_of_dots = int(graph_params.get("count_of_points", 500))
+        # w_end = float(graph_params.get("w_end", 100.0))
 
         x_ACH, y_ACH = cls.calculate_ACH(K1, K2, T1, T2, xi, count_of_dots, w_end)
         Re_AFCH, Im_AFCH = cls.calculate_AFCH(K1, K2, T1, T2, xi, count_of_dots, w_end)
