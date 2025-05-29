@@ -34,6 +34,7 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
     "http://localhost:5173",
     "https://testautomationuniversityplatform2025.ru",
 ]
