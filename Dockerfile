@@ -50,7 +50,5 @@ CMD ["sh", "-c", "echo 'Path to index.html:' && \
                  ls -la /frontend_dist/assets && \
                  echo 'Running migrations...' && \
                  python manage.py migrate && \
-                 echo 'Running collectstatic...' && \
-                 python manage.py collectstatic --noinput --verbosity 2 && \
-                 echo 'Starting Gunicorn...' && \
-                 gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"]
+                 echo 'Starting Django development server...' && \
+                 python manage.py runserver 0.0.0.0:8000"]
