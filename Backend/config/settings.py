@@ -109,6 +109,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'INFO',
         },
+        'whitenoise': {  # Добавляем логгер для whitenoise
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
     },
 }
 
