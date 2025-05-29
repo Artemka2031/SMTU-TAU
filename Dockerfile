@@ -34,19 +34,23 @@ COPY --from=frontend-build /frontend/dist /frontend_dist
 RUN chmod -R 755 /frontend_dist
 
 ENV PYTHONUNBUFFERED=1
-ENV DOMAIN_NAME=localhost:8000
+ENV DOMAIN_NAME=smtu-tau.onrender.com
 ENV DEBUG=0
 
 EXPOSE 8000
 
-# Выводим пути к файлам и запускаем сервер
+# Выводим пути и содержимое assets, затем запускаем для продакшена
 CMD ["sh", "-c", "echo 'Path to index.html:' && \
                  find /frontend_dist -type f -name 'index.html' && \
                  echo 'Path to JS files:' && \
                  find /frontend_dist -type f -name '*.js' && \
                  echo 'Path to CSS files:' && \
                  find /frontend_dist -type f -name '*.css' && \
+                 echo 'Contents of /frontend_dist/assets:' && \
+                 ls -la /frontend_dist/assets && \
                  echo 'Running migrations...' && \
                  python manage.py migrate && \
-                 echo 'Starting Django development server...' && \
-                 python manage.py runserver 0.0.0.0:8000"]
+                 echo 'Running collectstatic...' && \
+                 python manage.py collectstatic --noinput --verbosity 2 && \
+                 echo 'Starting Gunicorn...' && \
+                 gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"]
