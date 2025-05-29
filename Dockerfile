@@ -34,7 +34,7 @@ COPY --from=frontend-build /frontend/dist /frontend_dist
 RUN chmod -R 755 /frontend_dist
 
 ENV PYTHONUNBUFFERED=1
-ENV DOMAIN_NAME=pereiahe.beget.tech
+ENV DOMAIN_NAME=testautomationuniversityplatform2025.ru
 ENV DEBUG=0
 
 EXPOSE 8000

@@ -6,7 +6,7 @@ FRONTEND_DIST_DIR = Path('/frontend_dist')
 
 SECRET_KEY = 'django-insecure-+uz7o8#)z3647+v3^wx$g43#@exdr=xb%szode^bdo#w17'
 DEBUG = os.getenv('DEBUG', '0') == '1'
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://testautomationuniversityplatform2025.ru/']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -33,7 +33,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://your-domain.beget.tech"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://testautomationuniversityplatform2025.ru/"]
 
 ROOT_URLCONF = 'config.urls'
 
