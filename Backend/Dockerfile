@@ -1,22 +1,22 @@
-# Используем официальный slim-образ Python
 FROM python:3.11-slim
 
-# Устанавливаем зависимости
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libpq-dev \
-    bash \
-    && rm -rf /var/lib/apt/lists/*
-
-# Задаём рабочую директорию
 WORKDIR /app
 
-# Копируем зависимости и устанавливаем их
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY Backend/requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем весь проект
-COPY Backend /app
+# Copy Backend code
+COPY Backend .
 
-# Запускаем миграции, сканирование и сервер
-CMD ["bash", "-c", "python manage.py migrate --noinput && python manage.py scan_labs && python manage.py runserver 0.0.0.0:8000"]
+# Copy FrontEnd/dist to /frontend_dist
+COPY FrontEnd/dist /frontend_dist
+
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 8000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]

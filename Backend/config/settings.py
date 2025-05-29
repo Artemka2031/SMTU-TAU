@@ -1,11 +1,12 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-FRONTEND_DIST_DIR = BASE_DIR.parent / 'FrontEnd' / 'dist'
+FRONTEND_DIST_DIR = Path('/frontend_dist')
 
 SECRET_KEY = 'django-insecure-+uz7o8#)z3664+v3^wx$g43ecxdr=xb%szode^bdo#w17@pynf'
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG = os.getenv('DEBUG', '1') == '1'
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,7 +32,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://your-render-service.onrender.com"]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -73,7 +74,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/assets/'
-STATICFILES_DIRS = [BASE_DIR.parent / 'FrontEnd' / "dist" / "assets"]
+STATICFILES_DIRS = [FRONTEND_DIST_DIR / "assets"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
