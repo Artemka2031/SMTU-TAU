@@ -49,7 +49,6 @@ class LabWorkViewSet(viewsets.ReadOnlyModelViewSet):
 
         try:
             result = calc_func(new_params, graph_params, nonlinearity=nonlinearity)
-            print(f"Calculation result: {result}")
         except Exception as e:
             print(f"Calculation error: {e}")
             expected = {param.name: param.value for param in lab.parameters.all()}

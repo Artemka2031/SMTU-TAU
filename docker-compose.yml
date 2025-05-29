@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./Backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Backend:/app
+    environment:
+      - DEBUG=1
+      - DOMAIN_NAME=localhost:8000
+      - PYTHONUNBUFFERED=1
+    command: >
+      sh -c "echo 'Starting server on http://$${DOMAIN_NAME}' && \
+             echo 'Checking /frontend_dist contents:' && \
+             ls -la /frontend_dist && \
+             echo 'Checking /frontend_dist/assets contents:' && \
+             ls -la /frontend_dist/assets && \
+             echo 'Running migrations...' && \
+             python manage.py migrate && \
+             echo 'Running scan_labs...' && \
+             python manage.py scan_labs && \
+             echo 'Running collectstatic...' && \
+             python manage.py collectstatic --noinput --verbosity 2 && \
+             echo 'Setting permissions for staticfiles...' && \
+             chmod -R 755 /app/staticfiles && \
+             echo 'Checking /app/staticfiles contents after collectstatic:' && \
+             ls -la /app/staticfiles && \
+             find /app/staticfiles -type f && \
+             echo 'Starting Gunicorn...' && \
+             gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
