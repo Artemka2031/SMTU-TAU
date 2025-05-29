@@ -34,7 +34,7 @@ COPY --from=frontend-build /frontend/dist /frontend_dist
 RUN chmod -R 755 /frontend_dist
 
 ENV PYTHONUNBUFFERED=1
-ENV DOMAIN_NAME=smtu-tau.onrender.com
+ENV DOMAIN_NAME=pereiahe.beget.tech
 ENV DEBUG=0
 
 EXPOSE 8000
@@ -50,5 +50,7 @@ CMD ["sh", "-c", "echo 'Path to index.html:' && \
                  ls -la /frontend_dist/assets && \
                  echo 'Running migrations...' && \
                  python manage.py migrate && \
-                 echo 'Starting Django development server...' && \
-                 python manage.py runserver 0.0.0.0:8000"]
+                 echo 'Running collectstatic...' && \
+                 python manage.py collectstatic --noinput --verbosity 2 && \
+                 echo 'Starting Gunicorn...' && \
+                 gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"]

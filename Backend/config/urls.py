@@ -1,15 +1,14 @@
-import os
-
-from django.conf import settings
 from django.contrib import admin
-from django.http import HttpResponse
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
+from django.http import HttpResponse
+import os
+
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested.routers import NestedDefaultRouter
-
 from labs.views import DirectionViewSet, LabWorkViewSet
-
 
 # Эндпоинт для отладки staticfiles
 def debug_staticfiles(request):
@@ -38,8 +37,8 @@ urlpatterns = [
     path('api/', include(directions_router.urls)),
     path('debug/staticfiles/', debug_staticfiles, name='debug_staticfiles'),
     path('debug/index-html/', debug_index_html, name='debug_index_html'),
-    re_path(r'^(?!assets/|api/|admin/).*$', TemplateView.as_view(
+    re_path(r'^(?!api/|admin/).*$', TemplateView.as_view(
         template_name='index.html',
         extra_context={'name': 'SMTU-TAU'}
     ), name='home'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])  # Используем STATICFILES_DIRS для отладки
