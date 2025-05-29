@@ -10,6 +10,7 @@ services:
     environment:
       - DEBUG=1
       - DOMAIN_NAME=localhost:8000
+      - PYTHONUNBUFFERED=1
     command: >
       sh -c "echo 'Starting server on http://$${DOMAIN_NAME}' && \
              echo 'Checking /frontend_dist contents:' && \

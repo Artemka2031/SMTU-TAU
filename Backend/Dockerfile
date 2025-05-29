@@ -37,7 +37,25 @@ RUN ls -la /frontend_dist && ls -la /frontend_dist/assets
 RUN chmod -R 755 /frontend_dist
 
 ENV PYTHONUNBUFFERED=1
+ENV DOMAIN_NAME=smtu-tau.onrender.com
+ENV DEBUG=0
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
+# Переносим шаги из docker-compose.yml
+CMD ["sh", "-c", "echo 'Starting server on https://${DOMAIN_NAME}' && \
+                 echo 'Checking /frontend_dist contents:' && \
+                 ls -la /frontend_dist && \
+                 echo 'Checking /frontend_dist/assets contents:' && \
+                 ls -la /frontend_dist/assets && \
+                 echo 'Running migrations...' && \
+                 python manage.py migrate && \
+                 echo 'Running scan_labs...' && \
+                 python manage.py scan_labs && \
+                 echo 'Running collectstatic...' && \
+                 python manage.py collectstatic --noinput --verbosity 2 && \
+                 echo 'Checking /app/staticfiles contents after collectstatic:' && \
+                 ls -la /app/staticfiles && \
+                 find /app/staticfiles -type f && \
+                 echo 'Starting Gunicorn...' && \
+                 gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"]

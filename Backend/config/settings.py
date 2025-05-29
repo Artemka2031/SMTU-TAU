@@ -74,8 +74,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/assets/'
-# Упрощаем STATICFILES_DIRS
-STATICFILES_DIRS = [FRONTEND_DIST_DIR / "assets"]
+# Укажем, что содержимое /frontend_dist/assets должно копироваться в /app/staticfiles/assets/
+STATICFILES_DIRS = [
+    ("assets", FRONTEND_DIST_DIR / "assets"),
+]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Используем ManifestStaticFilesStorage для продакшена
