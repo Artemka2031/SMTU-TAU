@@ -6,7 +6,7 @@ FRONTEND_DIST_DIR = Path('/frontend_dist')
 
 SECRET_KEY = 'django-insecure-+uz7o8#)z3647+v3^wx$g43#@exdr=xb%szode^bdo#w17'
 DEBUG = os.getenv('DEBUG', '0') == '1'
-ALLOWED_HOSTS = ['testautomationuniversityplatform2025.ru', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['testautomationuniversityplatform2025.ru', 'localhost', '127.0.0.1', '46.173.19.44']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -22,14 +22,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise должен быть выше других
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
@@ -84,6 +84,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_ROOT = BASE_DIR / "staticfiles"  # Явно указываем корень для WhiteNoise
 
 LOGGING = {
     'version': 1,
@@ -109,7 +110,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'INFO',
         },
-        'whitenoise': {  # Добавляем логгер для whitenoise
+        'whitenoise': {  # Логирование для WhiteNoise
             'handlers': ['console'],
             'level': 'DEBUG',
         },
