@@ -12,7 +12,7 @@ from rest_framework_nested.routers import NestedDefaultRouter
 from labs.views import DirectionViewSet, LabWorkViewSet
 
 
-# Временный эндпоинт для отладки
+# Эндпоинт для отладки staticfiles
 def debug_staticfiles(request):
     staticfiles_dir = settings.STATIC_ROOT
     files = []
@@ -20,6 +20,13 @@ def debug_staticfiles(request):
         for filename in filenames:
             files.append(os.path.join(root, filename))
     return HttpResponse("<br>".join(files), content_type="text/plain")
+
+
+# Эндпоинт для отладки index.html
+def debug_index_html(request):
+    with open(os.path.join(settings.FRONTEND_DIST_DIR, 'index.html'), 'r') as f:
+        content = f.read()
+    return HttpResponse(content, content_type="text/plain")
 
 router = DefaultRouter()
 router.register(r'directions', DirectionViewSet, basename='direction')
@@ -31,7 +38,8 @@ urlpatterns = [
                   path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/', include(directions_router.urls)),
-                  path('debug/staticfiles/', debug_staticfiles, name='debug_staticfiles'),  # Новый эндпоинт
+                  path('debug/staticfiles/', debug_staticfiles, name='debug_staticfiles'),
+                  path('debug/index-html/', debug_index_html, name='debug_index_html'),  # Новый эндпоинт
                   re_path(r'^(?!assets/|api/|admin/).*$', TemplateView.as_view(template_name='index.html'),
                           name='home'),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
