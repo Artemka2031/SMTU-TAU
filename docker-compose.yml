@@ -1,30 +1,25 @@
+version: "3.9"
+
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: smtu_backend
     ports:
       - "8000:8000"
-    volumes:
-      - ./Backend:/app
-      - /etc/letsencrypt:/etc/letsencrypt:ro  # Монтируем сертификаты (будет использовано позже)
+    # В режиме продакшена обычно не монтируют код в контейнер,
+    # потому что всё уже «вшито» на этапе сборки.
+    # Поэтому volumes можно убрать или закомментировать:
+    # volumes:
+    #   - ./Backend:/app
+    #   - /etc/letsencrypt:/etc/letsencrypt:ro
     environment:
       - DEBUG=0
       - DOMAIN_NAME=testautomationuniversityplatform2025.ru
       - PYTHONUNBUFFERED=1
     networks:
       - app-network
-    command: >
-      sh -c "echo 'Starting server on http://$${DOMAIN_NAME}' && \
-             echo 'Checking /app/staticfiles contents:' && \
-             ls -la /app/staticfiles && \
-             ls -la /app/staticfiles/assets && \
-             echo 'Running migrations...' && \
-             python manage.py migrate && \
-             echo 'Running collectstatic...' && \
-             python manage.py collectstatic --noinput --verbosity 2 && \
-             echo 'Starting Gunicorn with WhiteNoise...' && \
-             gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"
 
 networks:
   app-network:

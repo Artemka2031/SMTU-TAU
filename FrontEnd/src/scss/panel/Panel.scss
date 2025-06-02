@@ -7,10 +7,10 @@
 .panel {
   /* Квадратная панель с фиксированными размерами по высоте и адаптивной шириной */
   width: 400px;
-  height: 1080px;
+  //height: 1080px;
   border-radius: 1vh;
   background-color: #fff;
-  margin: 2.5vh auto;
+  margin: 2.5vh 2.5vw 5vh 2.5vw;
   display: flex;
   flex-direction: column;
   overflow: hidden; /* убираем скролл */
@@ -37,6 +37,7 @@
       flex-wrap: wrap;
       gap: 0.5vh; /* Уменьшенный отступ между кнопками */
       justify-content: space-between;
+      flex-direction: column;
     }
   }
 

@@ -1,57 +1,61 @@
-# Этап 1: Сборка фронтенда
-FROM node:22 AS frontend-build
+# -----------------------------------------------------------------------
+# Этап 1: Собираем фронтенд (Vite + React)
+# -----------------------------------------------------------------------
+FROM node:22	AS frontend-build
 
+# Рабочая директория для фронтенда
 WORKDIR /frontend
 
-# Копируем файлы фронтенда
+# Копируем package.json и package-lock.json из папки FrontEnd
 COPY FrontEnd/package.json FrontEnd/package-lock.json ./
+
+# Устанавливаем зависимости
 RUN npm install
 
-# Копируем исходники и собираем
-COPY FrontEnd .
+# Копируем всю папку FrontEnd (исходники)
+COPY FrontEnd/ ./
+
+# Собираем продакшен-версию
 RUN npm run build
 
-# Этап 2: Сборка бэкенда
-FROM python:3.11-slim
 
+# -----------------------------------------------------------------------
+# Этап 2: Собираем бэкенд (Django)
+# -----------------------------------------------------------------------
+FROM python:3.11-slim	AS backend-build
+
+# Устанавливаем рабочую директорию для Django-приложения
 WORKDIR /app
 
-# Устанавливаем зависимости для бэкенда и добавляем curl
-RUN apt-get update && apt-get install -y \
-    gcc \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Устанавливаем небольшие системные пакеты, необходимые для сборки Python-зависимостей
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc && \
+    rm -rf /var/lib/apt/lists/*
 
+# Копируем requirements.txt из папки Backend
 COPY Backend/requirements.txt .
+
+# Устанавливаем Python-библиотеки
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем код бэкенда
-COPY Backend .
+# Копируем весь код бэкенда
+COPY Backend/ ./
 
-# Копируем собранный фронтенд
-COPY --from=frontend-build /frontend/dist /frontend_dist
+# Копируем результат сборки фронтенда из предыдущего этапа в директорию,
+# которую Django-настройки ожидают как FRONTEND_DIST_DIR:
+# то есть путь: /app/FrontEnd/dist
+COPY --from=frontend-build /frontend/dist /app/FrontEnd/dist
 
-# Устанавливаем права
-RUN chmod -R 755 /frontend_dist
-
+# Устанавливаем переменные окружения
 ENV PYTHONUNBUFFERED=1
-ENV DOMAIN_NAME=testautomationuniversityplatform2025.ru
+ENV DJANGO_SETTINGS_MODULE=config.settings
 ENV DEBUG=0
 
+# Создаём нужные директории для статики и собираем её (collectstatic)
+RUN python manage.py collectstatic --noinput
+
+# Порт, который будет слушать Gunicorn/WhiteNoise
 EXPOSE 8000
 
-# Выводим пути и содержимое assets, затем запускаем для продакшена
-CMD ["sh", "-c", "echo 'Path to index.html:' && \
-                 find /frontend_dist -type f -name 'index.html' && \
-                 echo 'Path to JS files:' && \
-                 find /frontend_dist -type f -name '*.js' && \
-                 echo 'Path to CSS files:' && \
-                 find /frontend_dist -type f -name '*.css' && \
-                 echo 'Contents of /frontend_dist/assets:' && \
-                 ls -la /frontend_dist/assets && \
-                 echo 'Running migrations...' && \
-                 python manage.py migrate && \
-                 echo 'Running collectstatic...' && \
-                 python manage.py collectstatic --noinput --verbosity 2 && \
-                 echo 'Starting Gunicorn...' && \
-                 gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 4 --log-level debug config.wsgi:application"]
+# Команда по умолчанию: запускаем Gunicorn (4 воркера, таймаут 120)
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "config.wsgi:application"]
