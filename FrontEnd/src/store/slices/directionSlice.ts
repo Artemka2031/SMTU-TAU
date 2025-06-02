@@ -1,3 +1,4 @@
+// SMTU/FrontEnd/src/store/slices/directionSlice.ts
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 export interface ParamItem {
@@ -85,41 +86,45 @@ interface CalculateLabArgs {
 }
 
 export const calculateLab = createAsyncThunk<
-    { directionId: number; labId: number; data: CalcResponse },
-    CalculateLabArgs,
-    { rejectValue: string }
+  { directionId: number; labId: number; data: CalcResponse },
+  CalculateLabArgs,
+  { rejectValue: string }
 >(
-    "direction/calculateLab",
-    async ({directionId, labId, bodyParams, nonlinearity}, {rejectWithValue}) => {
-        try {
-            const url = `http://127.0.0.1:8000/api/directions/${directionId}/labs/${labId}/calculate/`;
-            const requestBody = {...bodyParams};
-            if (nonlinearity && directionId === 2) {
-                requestBody.nonlinearity = nonlinearity;
-            }
-            console.log("Отправка запроса calculateLab:", url, requestBody);
+  "direction/calculateLab",
+  async ({ directionId, labId, bodyParams, nonlinearity }, { rejectWithValue }) => {
+    try {
+      // Берём базовый URL из .env (VITE_API_BASE_URL)
+      const baseUrl = import.meta.env.VITE_API_BASE_URL as string;
+      const url = `${baseUrl}/directions/${directionId}/labs/${labId}/calculate/`;
 
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(requestBody),
-            });
+      const requestBody = { ...bodyParams };
+      if (nonlinearity && directionId === 2) {
+        requestBody.nonlinearity = nonlinearity;
+      }
+      console.log("Отправка запроса calculateLab:", url, requestBody);
 
-            if (!response.ok) {
-                console.error("HTTP ошибка:", response.status);
-                return rejectWithValue(`HTTP ошибка: ${response.status}`);
-            }
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
 
-            const data: CalcResponse = await response.json();
-            console.log("Полученные данные calculateLab:", data);
+      if (!response.ok) {
+        console.error("HTTP ошибка:", response.status);
+        return rejectWithValue(`HTTP ошибка: ${response.status}`);
+      }
 
-            return {directionId, labId, data};
-        } catch (error) {
-            console.error("Ошибка запроса calculateLab:", error);
-            return rejectWithValue(String(error));
-        }
+      const data: CalcResponse = await response.json();
+      console.log("Полученные данные calculateLab:", data);
+
+      return { directionId, labId, data };
+    } catch (error) {
+      console.error("Ошибка запроса calculateLab:", error);
+      return rejectWithValue(String(error));
     }
+  }
 );
+
 
 const initialState: DirectionState = {
     activeDirection: "",

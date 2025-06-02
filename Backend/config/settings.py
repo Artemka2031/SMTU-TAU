@@ -79,9 +79,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/assets/'
-STATICFILES_DIRS = [
-    ("assets", FRONTEND_DIST_DIR / "assets"),
-]
+STATICFILES_DIRS = [FRONTEND_DIST_DIR / "assets"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

@@ -1,3 +1,4 @@
+// SMTU-TAU/FrontEnd/src/App.tsx
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from './components/Header/Header';
@@ -10,27 +11,27 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
   const { activeLab } = useSelector((state: RootState) => state.direction);
 
-  // Загружаем данные направлений при монтировании приложения
   useEffect(() => {
     console.log("Начало запроса к API для получения направлений...");
-    fetch('http://127.0.0.1:8000/api/directions/')
-      .then((response) => {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL as string;
+    const url = `${baseUrl}/directions/`;
+
+    fetch(url)
+      .then(response => {
         console.log("Статус ответа:", response.status);
         if (!response.ok) {
           throw new Error(`HTTP error: ${response.status}`);
         }
         return response.json();
       })
-      .then((data) => {
+      .then(data => {
         console.log("Получены данные:", data);
-        // data – это массив направлений с лабораторными работами
         dispatch(setDirectionsFromAPI(data));
-        // Устанавливаем активную лабораторную работу по умолчанию, если данные получены
         if (data.length > 0 && data[0].labs.length > 0) {
           dispatch(setActiveLab(data[0].labs[0].full));
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Ошибка загрузки направлений:", error);
       });
   }, [dispatch]);
