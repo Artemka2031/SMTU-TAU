@@ -10,7 +10,8 @@ from django.utils.text import slugify
 # ------------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Теперь FRONTEND_DIST_DIR указывает на папку FrontEnd/dist (рядом с Backend)
-FRONTEND_DIST_DIR = BASE_DIR.parent / "FrontEnd" / "dist"
+
+FRONTEND_DIST_DIR = Path("/frontend_dist")
 
 # ------------------------------------------------------------------------------
 # 2. Секретный ключ и отладка
@@ -119,9 +120,7 @@ STATIC_URL = "/assets/"
 
 # STATICFILES_DIRS указывает на папку dist/assets вашего фронтенда.
 # Django и WhiteNoise будут оттуда отдавать все файлы по URL /assets/...
-STATICFILES_DIRS = [
-    FRONTEND_DIST_DIR / "assets",
-]
+STATICFILES_DIRS  = [FRONTEND_DIST_DIR / "assets"]
 
 # При collectstatic итоговые файлы попадут в STATIC_ROOT
 STATIC_ROOT = BASE_DIR / "staticfiles"
