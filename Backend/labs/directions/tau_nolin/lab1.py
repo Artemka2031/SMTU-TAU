@@ -1,10 +1,13 @@
-from labs.base_lab import BaseLab
-from labs.directions.tau_nolin.nonlinearities import two_pose_rele, three_pose_rele, amplifier_with_saturation, amplifier_with_insensitivity, amplifier_with_saturation_and_insensitivity, rele_with_histeresis, luft, rele_with_insensetivity_and_hysteresis
 import numpy as np
+from labs.base_lab import BaseLab
+from labs.directions.tau_nolin.nonlinearities import two_pose_rele, three_pose_rele, amplifier_with_saturation, \
+    amplifier_with_insensitivity, amplifier_with_saturation_and_insensitivity, rele_with_histeresis, luft, \
+    rele_with_insensetivity_and_hysteresis
+
 
 class Lab1_TAU_NoLin(BaseLab):
     short = "1"
-    full = "1 ЛР: Нелинейные системы"
+    full = "Нелинейные системы"
     note = "Лабораторная работа по нелинейным системам"
     active_graph = "x(t)"
 
@@ -39,9 +42,11 @@ class Lab1_TAU_NoLin(BaseLab):
         "Усилитель с насыщением": lambda x, dx_dt, a, b, c, K: amplifier_with_saturation(x, a, b, K),
         "Усилитель с зоной нечувствительности": lambda x, dx_dt, a, b, c, K: amplifier_with_insensitivity(x, a, b, K),
         "Усилитель с зоной нечувствительности и ограничением": lambda x, dx_dt, a, b, c, K: amplifier_with_saturation_and_insensitivity(x, a, b, c, K),
+        "Реле с зоной нечувствительности и гистерезисом": lambda x, dx_dt, a, b, c,
+                                                                 K: rele_with_insensetivity_and_hysteresis(x, dx_dt, a,
+                                                                                                           b, c, K),
         "Реле с гистерезисом": lambda x, dx_dt, a, b, c, K: rele_with_histeresis(x, dx_dt, a, b),
         "Люфт": lambda x, dx_dt, a, b, c, K: luft(x, dx_dt, K, b),
-        "Реле с зоной нечувствительности и гистерезисом": lambda x, dx_dt, a, b, c, K: rele_with_insensetivity_and_hysteresis(x, dx_dt, a, b, c, K),
     }
 
     @classmethod

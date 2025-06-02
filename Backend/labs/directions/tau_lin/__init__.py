@@ -3,14 +3,16 @@ from .lab1 import Lab1_TAU_Lin
 from .lab2 import Lab2_TAU_Lin
 from .lab3 import Lab3_TAU_Lin
 from .lab4 import Lab4_TAU_Lin
-from .lab5_1 import Lab5_1_TAU_Lin
-from .lab5_2 import Lab5_2_TAU_Lin
-from .lab6_1 import Lab6_1_TAU_Lin
-from .lab6_2 import Lab6_2_TAU_Lin
-from .lab6_3 import Lab6_3_TAU_Lin
-from .lab6_4 import Lab6_4_TAU_Lin
+# from .lab5_1 import Lab5_1_TAU_Lin
+# from .lab5_2 import Lab5_2_TAU_Lin
+# from .lab6_1 import Lab6_1_TAU_Lin
+# from .lab6_2 import Lab6_2_TAU_Lin
+# from .lab6_3 import Lab6_3_TAU_Lin
+# from .lab6_4 import Lab6_4_TAU_Lin
 # Собираем список лабораторных работ (классов) данного направления
-LABS = [Lab1_TAU_Lin, Lab2_TAU_Lin, Lab3_TAU_Lin, Lab4_TAU_Lin, Lab5_1_TAU_Lin, Lab5_2_TAU_Lin, Lab6_1_TAU_Lin, Lab6_2_TAU_Lin, Lab6_3_TAU_Lin, Lab6_4_TAU_Lin]
+LABS = [Lab1_TAU_Lin, Lab2_TAU_Lin, Lab3_TAU_Lin, Lab4_TAU_Lin,
+        # Lab5_1_TAU_Lin, Lab5_2_TAU_Lin, Lab6_1_TAU_Lin, Lab6_2_TAU_Lin, Lab6_3_TAU_Lin, Lab6_4_TAU_Lin
+        ]
 
 labs_config = []
 for lab_cls in LABS:

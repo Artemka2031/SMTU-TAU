@@ -15,6 +15,19 @@
   flex-direction: column;
   overflow: hidden; /* убираем скролл */
 
+  .parameters {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* две равные колонки */
+    column-gap: 1vw; /* горизонтальный отступ */
+    row-gap: 1vh; /* вертикальный */
+    margin-bottom: 2vh;
+
+    /*   при очень узкой панели (<350 px) вместо двух — одна колонка   */
+    @media (max-width: 350px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   h2 {
     text-align: left;
     color: #333;
@@ -23,29 +36,20 @@
   }
 
   .nonlinearities {
-    margin: 1.5vh 0;
+    //margin: 1.5vh 0;
 
     h3 {
       text-align: left;
       color: #333;
       font-size: 1.8vh;
       margin-bottom: 0.8vh;
+      font-weight: 600;
     }
 
     .nonlinearity-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5vh; /* Уменьшенный отступ между кнопками */
-      justify-content: space-between;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+      gap: 0.8vh 0.5vh;
     }
-  }
-
-  /*.bottom-block {
-    margin-top: auto;
-  }*/
-
-  .bottom-block > * {
-    margin-bottom: 1vh;
   }
 }

@@ -3,6 +3,18 @@
 import os
 import sys
 
+from pathlib import Path
+from dotenv import load_dotenv
+
+# ──┬─ корень репозитория   P:\Python\SMTU-TAU
+#   └─ Backend\manage.py     ← текущий файл
+project_root = Path(__file__).resolve().parent.parent
+
+# выбираем нужный файл-окружение:
+env_file = project_root / ".env.dev"        # для локалки
+# env_file = project_root / ".env.prod"     # для пред-/прод-сервера
+
+load_dotenv(env_file)        # подгрузит все KEY=value в os.environ
 
 def main():
     """Run administrative tasks."""

@@ -3,6 +3,8 @@
 import os
 from pathlib import Path
 
+from django.utils.text import slugify
+
 # ------------------------------------------------------------------------------
 # 1. Базовые директории
 # ------------------------------------------------------------------------------
@@ -13,16 +15,15 @@ FRONTEND_DIST_DIR = BASE_DIR.parent / "FrontEnd" / "dist"
 # ------------------------------------------------------------------------------
 # 2. Секретный ключ и отладка
 # ------------------------------------------------------------------------------
-SECRET_KEY = "django-insecure-+uz7o8#)z3647+v3^wx$g43#@exdr=xb%szode^bdo#w17"
-DEBUG = False  # Для локальной разработки
+# SECRET_KEY = "django-insecure-+uz7o8#)z3647+v3^wx$g43#@exdr=xb%szode^bdo#w17"
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-" + slugify(str(BASE_DIR))  # fallback для локалки
+)
+DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
 
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "46.173.19.44:8000",
-    "46.173.19.44",
-    "testautomationuniversityplatform2025.ru"
-    # при деплое на сервер добавите сюда свой домен, напр. "testautomationuniversityplatform2025.ru"
+    host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",") if host.strip()
 ]
 
 # ------------------------------------------------------------------------------

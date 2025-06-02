@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Backend/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}    # <-- передаём в node-этап
+    env_file: .env.prod                            # <-- Django получит все переменные
+    ports:
+      - "8000:8000"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: always
+    networks: [appnet]
+
+networks:
+  appnet:
+    driver: bridge
