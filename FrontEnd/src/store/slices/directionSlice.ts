@@ -139,7 +139,8 @@ export const directionSlice = createSlice({
         setActiveDirection(state, action: PayloadAction<string>) {
             console.log("setActiveDirection:", action.payload);
             state.activeDirection = action.payload;
-            state.activeLab = null;
+            const dir = state.directions.find(d => d.name === action.payload);
+            state.activeLab = dir && dir.labs.length > 0 ? dir.labs[0].full : null;
         },
 
         setActiveLab(state, action: PayloadAction<string | null>) {

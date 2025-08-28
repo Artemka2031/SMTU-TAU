@@ -32,5 +32,6 @@ EXPOSE 8000
 
 CMD ["sh", "-c", "\
     python manage.py migrate && \
+    python manage.py scan_labs && \
     python manage.py collectstatic --noinput && \
     gunicorn --bind 0.0.0.0:8000 --workers 4 config.wsgi:application"]

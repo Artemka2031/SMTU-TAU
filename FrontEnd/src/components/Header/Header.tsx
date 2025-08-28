@@ -8,10 +8,8 @@ import HeadButton from "./Headbutton.tsx";
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
-  const activeDirection = useSelector((state: RootState) => state.direction.activeDirection);
-
-  // Список направлений (можно вынести в initialState, если нужно)
-  const directions = ["OA", "ТАУ Лин", "ТАУ Нелин", "ТДЗ"];
+  const { activeDirection, directions } = useSelector((state: RootState) => state.direction);
+  const directionNames = directions.map((d) => d.name);
 
   const handleClick = (dir: string) => {
     dispatch(setActiveDirection(dir));
@@ -25,7 +23,7 @@ const Header: React.FC = () => {
       <div className="header-right">
         <nav>
           <ul className="nav-buttons">
-            {directions.map((label) => (
+            {directionNames.map((label) => (
               <li key={label}>
                 <HeadButton
                   label={label}
