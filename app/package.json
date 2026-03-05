@@ -1,0 +1,97 @@
+{
+  "name": "smtu-tau",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "verify:math:fixtures": "python ./scripts/generate_math_fixtures.py",
+    "verify:math:run": "tsc -p tsconfig.verify.json && node .verify-dist/scripts/verify-math.js",
+    "verify:math": "npm run verify:math:fixtures && npm run verify:math:run",
+    "verify:critical": "npm run build && npm run electron:build && npm run verify:math && npm run electron:dist",
+    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && npm run electron:start\"",
+    "electron:start": "tsc -p electron/tsconfig.json && cross-env NODE_ENV=development electron .",
+    "electron:build": "tsc -p electron/tsconfig.json",
+    "preelectron:pack": "npm run build",
+    "electron:pack": "npm run electron:build && electron-builder --dir",
+    "preelectron:dist": "npm run build",
+    "electron:dist": "npm run electron:build && electron-builder"
+  },
+  "dependencies": {
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@reduxjs/toolkit": "^2.11.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.6",
+    "lucide-react": "^0.575.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
+    "sass": "^1.97.3",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.24",
+    "concurrently": "^9.2.1",
+    "cross-env": "^7.0.3",
+    "electron": "^40.6.0",
+    "electron-builder": "^26.8.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5",
+    "wait-on": "^9.0.4"
+  },
+  "build": {
+    "appId": "com.smtu.tau",
+    "productName": "SMTU-TAU",
+    "npmRebuild": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "out/**/*"
+    ],
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico"
+    },
+    "portable": {
+      "artifactName": "SMTU-TAU-Portable.exe"
+    }
+  }
+}

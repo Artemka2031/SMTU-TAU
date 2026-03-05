@@ -1,0 +1,294 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\title{Формулы лабораторных работ}
+\author{SMTU-TAU}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{1. Основы автоматизации (ОА)}
+
+\subsection*{ЛР1}
+\[
+\dot{\varphi} = -\frac{\theta}{T_a}\varphi + \frac{1}{T_a}\mu - \frac{1}{T_a}f
+\]
+\[
+\varphi_{i+1} = \varphi_i + \Delta t\,\dot{\varphi}_i
+\]
+
+\subsection*{ЛР2}
+\[
+\mu(t)=\mu_0+\frac{T_r^2}{T_k}\left(\dot{\mu}_0+\frac{\varphi_0}{T_k}\right)\left(1-e^{-\frac{T_k}{T_r^2}t}\right)+\frac{\varphi_0}{T_k}t
+\]
+\[
+\dot{\mu}(t)=\left(\dot{\mu}_0+\frac{\varphi_0}{T_k}\right)e^{-\frac{T_k}{T_r^2}t}+\frac{\varphi_0}{T_k}
+\]
+
+\subsection*{ЛР3}
+\[
+T_r^2\ddot{\mu}+T_k\dot{\mu}+\gamma\mu=\varphi_0,\qquad
+D=T_k^2-4T_r^2\gamma
+\]
+\[
+\lambda_{1,2}=\frac{-T_k\pm\sqrt{D}}{2T_r^2}
+\]
+\[
+\mu(t)=e^{\beta t}\bigl(C_1\cos(\omega t)+C_2\sin(\omega t)\bigr)+c,
+\quad
+\beta=-\frac{T_k}{2T_r^2},
+\quad
+\omega=\frac{\sqrt{4T_r^2\gamma-T_k^2}}{2T_r^2},
+\quad
+c=\frac{\varphi_0}{\gamma}
+\]
+
+\subsection*{ЛР4}
+\[
+a\ddot{\mu}+b\dot{\mu}+c\mu=f
+\]
+\[
+a=T_r^2T_a,\quad
+b=T_r^2\Theta+T_kT_a,\quad
+c=T_k\Theta
+\]
+\[
+\dot{\varphi}=\frac{-\mu-f-\Theta\varphi}{T_a},
+\qquad
+\varepsilon(t)=-\frac{1}{T_a}\varphi(t)-\mu(t)
+\]
+
+\subsection*{ЛР5}
+\[
+\dot{\mu}=v,\qquad
+\dot{v}=\frac{\varphi-T_kv-\gamma\mu}{T_r^2},\qquad
+\dot{\varphi}=\frac{-\mu-f-\Theta\varphi}{T_a}
+\]
+Численный метод: RK4.
+\[
+\varepsilon(t)=-\frac{1}{T_a}\varphi(t)-\mu(t)
+\]
+
+\section*{2. ТАУ Лин}
+
+\subsection*{ЛР1 (дифференцирующее звено с замедлением)}
+\[
+y(t)=\frac{KX_m}{T}e^{-t/T}
+\]
+\[
+A(\omega)=\frac{K\omega}{\sqrt{T^2\omega^2+1}},
+\qquad
+\phi(\omega)=\arctan\left(\frac{1}{T\omega}\right)
+\]
+\[
+\Re(\omega)=\frac{KT^2\omega^2}{T^2\omega^2+1},
+\qquad
+\Im(\omega)=\frac{K\omega}{T^2\omega^2+1}
+\]
+\[
+L(\omega)=20\log_{10}\left(\frac{K\omega}{\sqrt{1+(T\omega)^2}}\right)-20\log_{10}\left(\frac{K}{T}\right),
+\quad
+\phi_{\mathrm{deg}}(\omega)=90^\circ-\arctan(T\omega)\frac{180^\circ}{\pi}
+\]
+
+\subsection*{ЛР2 (апериодическое звено 1-го порядка)}
+\[
+y(t)=KX_m\left(1-e^{-t/T}\right)
+\]
+\[
+A(\omega)=\frac{K}{\sqrt{T^2\omega^2+1}},
+\qquad
+\phi(\omega)=-\arctan(T\omega)
+\]
+\[
+\Re(\omega)=\frac{K}{T^2\omega^2+1},
+\qquad
+\Im(\omega)=-\frac{K\omega}{T^2\omega^2+1}
+\]
+
+\subsection*{ЛР3 (апериодическое звено 2-го порядка)}
+\[
+y(t)=K_1K_2X_m\left(1-\frac{T_1}{T_1-T_2}e^{-t/T_1}+\frac{T_2}{T_1-T_2}e^{-t/T_2}\right)
+\]
+\[
+A(\omega)=\frac{K_1K_2}{\sqrt{(T_1^2\omega^2+1)(T_2^2\omega^2+1)}}
+\]
+\[
+\phi(\omega)=-(\arctan(T_1\omega)+\arctan(T_2\omega))
+\]
+\[
+\Re(\omega)=\frac{K_1K_2(1-T_1T_2\omega^2)}{(1-T_1T_2\omega^2)^2+(T_1+T_2)^2\omega^2},
+\quad
+\Im(\omega)=-\frac{K_1K_2\omega(T_1+T_2)}{(1-T_1T_2\omega^2)^2+(T_1+T_2)^2\omega^2}
+\]
+
+\subsection*{ЛР4 (колебательное звено)}
+\[
+\omega_n=\frac{\sqrt{1-\xi^2}}{T}
+\]
+\[
+y(t)=KX_m\left[1-e^{-\xi t/T}\left(\cos(\omega_nt)+\frac{\xi}{\sqrt{1-\xi^2}}\sin(\omega_nt)\right)\right]
+\]
+\[
+A(\omega)=\frac{K}{\sqrt{(1-T^2\omega^2)^2+(2\xi T\omega)^2}}
+\]
+\[
+\phi(\omega)=-\operatorname{atan2}(2\xi T\omega,\;1-T^2\omega^2)
+\]
+\[
+\Re(\omega)=\frac{K(1-T^2\omega^2)}{(1-T^2\omega^2)^2+(2\xi T\omega)^2},
+\quad
+\Im(\omega)=-\frac{K(2\xi T\omega)}{(1-T^2\omega^2)^2+(2\xi T\omega)^2}
+\]
+
+\section*{3. ТАУ Нелин}
+
+\subsection*{Базовая динамика (ЛР1-ЛР5)}
+\[
+x=\varphi-\delta\mu,\qquad
+\dot{\varphi}=\frac{1}{T_a}(z-\theta\varphi-\mu),\qquad
+\dot{\mu}=\frac{F(x,\dot{x})}{T_s},\qquad
+\dot{x}=\dot{\varphi}-\delta\dot{\mu}
+\]
+Интегратор: явный Эйлер (в части ЛР есть защита от NaN/Inf).
+
+\subsection*{Нелинейности}
+\[
+F_{\text{2-поз}}(x)=
+\begin{cases}
+a, & x>0,\\
+-a, & x\le 0.
+\end{cases}
+\]
+\[
+F_{\text{3-поз}}(x)=
+\begin{cases}
+a, & x>b,\\
+0, & |x|\le b,\\
+-a, & x<-b.
+\end{cases}
+\]
+\[
+F_{\text{нас}}(x)=
+\begin{cases}
+Kx, & |x|\le b,\\
+a, & x>b,\\
+-a, & x<-b.
+\end{cases}
+\]
+\[
+F_{\text{нечувст}}(x)=
+\begin{cases}
+K(x-b), & x>b,\\
+0, & |x|\le b,\\
+K(x+b), & x<-b.
+\end{cases}
+\]
+\[
+F_{\text{нечувст+огр}}(x)=
+\begin{cases}
+a, & x>c,\\
+K(x-b), & b<x\le c,\\
+0, & -b\le x\le b,\\
+K(x+b), & -c\le x<-b,\\
+-a, & x<-c.
+\end{cases}
+\]
+\[
+F_{\text{гист}}(x,\dot{x})=
+\begin{cases}
+a, & \dot{x}>0,\;x>b,\\
+-a, & \dot{x}>0,\;x\le b,\\
+a, & \dot{x}<0,\;x>-b,\\
+-a, & \dot{x}<0,\;x\le -b.
+\end{cases}
+\]
+\[
+F_{\text{люфт}}(x,\dot{x})=
+\begin{cases}
+K(x-b), & \dot{x}>0,\\
+K(x+b), & \dot{x}<0.
+\end{cases}
+\]
+\[
+F_{\text{нечувст+гист}}(x,\dot{x})=
+\begin{cases}
+a, & \dot{x}>0,\;x>c,\\
+0, & \dot{x}>0,\;-b\le x\le c,\\
+-a, & \dot{x}>0,\;x<-b,\\
+a, & \dot{x}<0,\;x>b,\\
+0, & \dot{x}<0,\;-c\le x\le b,\\
+-a, & \dot{x}<0,\;x<-c.
+\end{cases}
+\]
+
+\section*{4. ТДЗ}
+
+В обозначениях ниже \(s=j\omega\).
+
+\subsection*{ЛР1 (разомкнутая система, вариант 1)}
+\[
+W_1(s)=\frac{K_1K_2K_3}{(1+T_1s)(1+T_2s)(1+T_3s)}
+\]
+\[
+A(\omega)=\frac{K_1K_2K_3}{\sqrt{(1+T_1^2\omega^2)(1+T_2^2\omega^2)(1+T_3^2\omega^2)}}
+\]
+
+\subsection*{ЛР2 (разомкнутая система, вариант 2)}
+\[
+W_2(s)=\frac{K_1K_2}{(1+T_1s)\left(1+2\xi T_2s+T_2^2s^2\right)}
+\]
+\[
+A(\omega)=\frac{K_1K_2}{\sqrt{(1+T_1^2\omega^2)\left((1-T_2^2\omega^2)^2+(2\xi T_2\omega)^2\right)}}
+\]
+
+\subsection*{ЛР3 (замкнутая система, вариант 1)}
+\[
+H_3(s)=\frac{K_1K_2(1+T_3s)}
+{T_1T_2T_3s^3+(T_1T_2+T_1T_3+T_2T_3)s^2+(T_1+T_2+T_3)s+(1+K_1K_2K_3)}
+\]
+\[
+D_3(s)=T_1T_2T_3s^3+(T_1T_2+T_1T_3+T_2T_3)s^2+(T_1+T_2+T_3)s+(1+K_1K_2K_3)
+\]
+
+\subsection*{ЛР4 (замкнутая система, вариант 2)}
+\[
+H_4(s)=\frac{K_1K_2(1+T_2s)}
+{T_1^2T_2s^3+(2\xi T_1T_2+T_1^2)s^2+(T_2+2\xi T_1)s+(1+K_1K_2)}
+\]
+\[
+D_4(s)=T_1^2T_2s^3+(2\xi T_1T_2+T_1^2)s^2+(T_2+2\xi T_1)s+(1+K_1K_2)
+\]
+
+\subsection*{ЛР5 (замкнутая система, вариант 3)}
+\[
+H_5(s)=\frac{K_1(1+T_2s)(1+T_3s)}
+{T_1T_2T_3s^3+(T_1T_2+T_1T_3+T_2T_3)s^2+(T_1+T_2+T_3)s+(1+K_1K_2K_3)}
+\]
+\[
+D_5(s)=T_1T_2T_3s^3+(T_1T_2+T_1T_3+T_2T_3)s^2+(T_1+T_2+T_3)s+(1+K_1K_2K_3)
+\]
+
+\subsection*{ЛР6 (замкнутая система, вариант 4)}
+\[
+H_6(s)=\frac{K_1(T_2^2s^2+2\xi T_2s+1)}
+{T_1T_2^2s^3+(2\xi T_1T_2+T_2^2)s^2+(T_1+2\xi T_2)s+(1+K_1K_2)}
+\]
+\[
+D_6(s)=T_1T_2^2s^3+(2\xi T_1T_2+T_2^2)s^2+(T_1+2\xi T_2)s+(1+K_1K_2)
+\]
+
+\end{document}

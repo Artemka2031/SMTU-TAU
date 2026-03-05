@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": ".verify-dist",
+    "rootDir": ".",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "isolatedModules": false,
+    "incremental": false
+  },
+  "include": [
+    "scripts/verify-math.ts",
+    "src/modules/calculations/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

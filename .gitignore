@@ -192,3 +192,20 @@ FrontEnd/node_modules/
 FrontEnd/dist/
 Backend/staticfiles/
 Backend/db.sqlite3
+
+# Project local caches and Codex metadata
+.claude/
+.pip-cache/
+.venv/
+.venv313/
+FrontEnd/.npm-cache/
+
+# Next.js + Electron app artifacts
+app/node_modules/
+app/.next/
+app/out/
+app/dist-electron/
+app/.verify-dist/
+app/release/
+app/release/**/*
+app/*.tsbuildinfo
